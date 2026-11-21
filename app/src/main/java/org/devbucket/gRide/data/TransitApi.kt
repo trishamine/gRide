@@ -218,7 +218,7 @@ object TransitApi {
                 planned = planned,
                 estimated = if (realtime) actual else null,
                 line = line,
-                lineName = "${mode.label} $line",
+                lineName = line,
                 mode = mode,
                 destination = st.optString("headsign").ifBlank { st.optJSONObject("tripTo")?.optString("name").orEmpty() },
                 platform = place.optString("track").ifBlank { place.optString("scheduledTrack") },
@@ -316,7 +316,7 @@ object TransitApi {
         return Leg(
             mode = mode,
             line = if (mode == Mode.WALK) "" else line,
-            lineName = if (mode == Mode.WALK) "Walk" else "${mode.label} $line",
+            lineName = if (mode == Mode.WALK) "" else line,
             towards = leg.optString("headsign"),
             from = from,
             to = to,

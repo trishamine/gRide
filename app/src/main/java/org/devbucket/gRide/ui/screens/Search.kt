@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -88,9 +91,9 @@ fun SearchScreen(vm: AppViewModel, target: SearchTarget) {
                 value = vm.searchQuery,
                 onValueChange = { vm.onSearchQuery(it, target) },
                 placeholder = when (target) {
-                    SearchTarget.FROM -> "Where do you start?"
-                    SearchTarget.TO -> "Where to?"
-                    SearchTarget.STOP -> "Search stop"
+                    SearchTarget.FROM -> stringResource(R.string.where_start)
+                    SearchTarget.TO -> stringResource(R.string.where_to)
+                    SearchTarget.STOP -> stringResource(R.string.search_stop)
                 },
                 modifier = Modifier.weight(1f).focusRequester(focus),
             )
@@ -101,8 +104,8 @@ fun SearchScreen(vm: AppViewModel, target: SearchTarget) {
                 item {
                     SearchRow(
                         icon = { Icon(Icons.Filled.MyLocation, null, tint = MaterialTheme.colorScheme.primary) },
-                        title = if (target == SearchTarget.STOP) "Nearest stop" else "Current location",
-                        subtitle = "Use your position",
+                        title = if (target == SearchTarget.STOP) stringResource(R.string.nearest_stop) else stringResource(R.string.current_location),
+                        subtitle = stringResource(R.string.use_position),
                     ) {
                         if (LocationProvider.hasPermission(context)) vm.chooseCurrentLocation(target)
                         else permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
@@ -110,7 +113,7 @@ fun SearchScreen(vm: AppViewModel, target: SearchTarget) {
                 }
                 (vm.searchResults as? Load.Error)?.let { item { ErrorState(it.message, null) } }
                 if (favorites.isNotEmpty()) {
-                    item { SectionTitle("Favourite stops") }
+                    item { SectionTitle(stringResource(R.string.favourite_stops)) }
                     items(favorites, key = { "f" + it.id }) { p -> PlaceRow(p, favorite = true) { vm.choose(p, target) } }
                 }
                 val recent = buildList {
@@ -118,14 +121,14 @@ fun SearchScreen(vm: AppViewModel, target: SearchTarget) {
                     if (!target.stopsOnly) trips.forEach { add(it.from); add(it.to) }
                 }.distinctBy { it.id }.filter { r -> favorites.none { it.id == r.id } }.take(12)
                 if (recent.isNotEmpty()) {
-                    item { SectionTitle("Recent") }
+                    item { SectionTitle(stringResource(R.string.recent)) }
                     items(recent, key = { "r" + it.id }) { p -> PlaceRow(p, favorite = false, recent = true) { vm.choose(p, target) } }
                 }
             } else when (val r = vm.searchResults) {
                 is Load.Loading, Load.Idle -> item { LoadingState() }
                 is Load.Error -> item { ErrorState(r.message, onRetry = { vm.onSearchQuery(vm.searchQuery, target) }) }
                 is Load.Ok -> {
-                    if (r.data.isEmpty()) item { EmptyState("Nothing found for “${vm.searchQuery}”.") }
+                    if (r.data.isEmpty()) item { EmptyState(stringResource(R.string.nothing_found, vm.searchQuery)) }
                     items(r.data, key = { it.id }) { p -> PlaceRow(p, favorite = favorites.any { it.id == p.id }) { vm.choose(p, target) } }
                 }
             }
@@ -144,7 +147,7 @@ private fun SearchField(value: String, onValueChange: (String) -> Unit, placehol
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { }),
             trailingIcon = if (value.isNotEmpty()) ({
-                IconButton(onClick = { onValueChange("") }) { Icon(Icons.Filled.Close, "Clear") }
+                IconButton(onClick = { onValueChange("") }) { Icon(Icons.Filled.Close, stringResource(R.string.clear)) }
             }) else null,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,

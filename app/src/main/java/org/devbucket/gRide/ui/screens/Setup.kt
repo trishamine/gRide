@@ -1,5 +1,7 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -81,13 +83,15 @@ import org.devbucket.gRide.ui.components.SegmentedChoice
 import org.devbucket.gRide.ui.glass.GlassSurface
 import org.devbucket.gRide.ui.glass.isGlass
 
-private const val STEPS = 4
+private const val STEPS = 5
+private const val INTRO = 1
 
-/** First-run setup: animated intro → design → theme → location. Can be replayed from the secret settings. */
+/** First-run setup: language → animated intro → design → theme → location. Can be replayed from the secret settings. */
 @Composable
 fun SetupScreen(vm: AppViewModel) {
     var step by rememberSaveable { mutableIntStateOf(0) }
-    BackHandler(enabled = step > 0) { step-- }
+    fun previous() { step = if (step == INTRO + 1) 0 else step - 1 } // going back skips the intro animation
+    BackHandler(enabled = step > 0) { previous() }
 
     Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding()) {
         AnimatedContent(
@@ -101,23 +105,24 @@ fun SetupScreen(vm: AppViewModel) {
             label = "setup",
         ) { s ->
             when (s) {
-                0 -> IntroStep(onNext = { step = 1 })
-                1 -> StyleStep(vm)
-                2 -> ThemeStep(vm)
+                0 -> LanguageStep()
+                INTRO -> IntroStep(onNext = { step = INTRO + 1 })
+                2 -> StyleStep(vm)
+                3 -> ThemeStep(vm)
                 else -> LocationStep(vm)
             }
         }
-        if (step > 0) {
+        if (step != INTRO) {
             Row(
                 Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Dots(step)
                 Spacer(Modifier.weight(1f))
-                TextButton(onClick = { step-- }) { Text("Back") }
+                if (step > 0) TextButton(onClick = { previous() }) { Text(stringResource(R.string.back)) }
                 Spacer(Modifier.width(8.dp))
-                if (step < STEPS - 1) PrimaryAction("Next", { step++ })
-                else PrimaryAction("Let's ride", vm::finishSetup)
+                if (step < STEPS - 1) PrimaryAction(stringResource(R.string.next), { step++ })
+                else PrimaryAction(stringResource(R.string.lets_ride), vm::finishSetup)
             }
         }
     }
@@ -126,7 +131,8 @@ fun SetupScreen(vm: AppViewModel) {
 @Composable
 private fun Dots(step: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-        for (i in 1 until STEPS) {
+        for (i in 0 until STEPS) {
+            if (i == INTRO) continue
             val w by animateDpAsState(if (i == step) 24.dp else 8.dp, spring(dampingRatio = 0.6f), label = "dot")
             Box(
                 Modifier
@@ -135,6 +141,15 @@ private fun Dots(step: Int) {
                     .background(if (i == step) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant)
             )
         }
+    }
+}
+
+// ------------------------------------------------------------ language
+
+@Composable
+private fun LanguageStep() {
+    StepPage(stringResource(R.string.choose_language), stringResource(R.string.change_later)) {
+        LanguagePicker()
     }
 }
 
@@ -189,14 +204,14 @@ private fun IntroStep(onNext: () -> Unit) {
         AnimatedVisibility(showRest, enter = fadeIn(tween(500)) + slideInVertically { it / 2 }) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    "Buses and trams in Augsburg.\nLive, on a map, in your style.",
+                    stringResource(R.string.intro_tagline),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp),
                 )
                 Spacer(Modifier.height(40.dp))
-                PrimaryAction("Get started", onNext, Modifier.fillMaxWidth(0.7f))
+                PrimaryAction(stringResource(R.string.get_started), onNext, Modifier.fillMaxWidth(0.7f))
             }
         }
     }
@@ -207,18 +222,18 @@ private fun IntroStep(onNext: () -> Unit) {
 @Composable
 private fun StyleStep(vm: AppViewModel) {
     val settings by vm.store.settings.collectAsStateWithLifecycle()
-    StepPage("Pick your style", "You can change it later in Settings.") {
+    StepPage(stringResource(R.string.pick_style), stringResource(R.string.change_later)) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StyleOption(
-                title = "Expressive",
-                text = "Material 3 Expressive: bold shapes and springy motion",
+                title = stringResource(R.string.style_expressive),
+                text = stringResource(R.string.expressive_short),
                 selected = settings.uiStyle == UiStyle.EXPRESSIVE,
                 modifier = Modifier.weight(1f),
                 onClick = { vm.store.updateSettings { it.copy(uiStyle = UiStyle.EXPRESSIVE) } },
             ) { ExpressivePreview() }
             StyleOption(
-                title = "Liquid Glass",
-                text = "Floating, refracting glass over the map",
+                title = stringResource(R.string.style_glass),
+                text = stringResource(R.string.glass_short),
                 selected = settings.uiStyle == UiStyle.LIQUID_GLASS,
                 modifier = Modifier.weight(1f),
                 onClick = { vm.store.updateSettings { it.copy(uiStyle = UiStyle.LIQUID_GLASS) } },
@@ -261,7 +276,7 @@ private fun ExpressivePreview() {
             Modifier.size(56.dp).clip(RoundedCornerShape(c.toInt())).background(MaterialTheme.colorScheme.primary)
         )
         Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
-            Text("Departures", Modifier.padding(horizontal = 14.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge)
+            Text(stringResource(R.string.tab_departures), Modifier.padding(horizontal = 14.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge)
         }
     }
 }
@@ -270,7 +285,7 @@ private fun ExpressivePreview() {
 private fun GlassPreview() {
     if (isGlass) {
         GlassSurface(Modifier.fillMaxWidth().height(56.dp), pressEffect = true) {
-            Text("Glass", fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.glass), fontWeight = FontWeight.Bold)
         }
     } else {
         // not active yet: hint at it with translucent layers
@@ -281,7 +296,7 @@ private fun GlassPreview() {
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.45f))
                     .border(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f), CircleShape),
                 contentAlignment = Alignment.Center,
-            ) { Text("Glass", fontWeight = FontWeight.Bold) }
+            ) { Text(stringResource(R.string.glass), fontWeight = FontWeight.Bold) }
         }
     }
 }
@@ -291,7 +306,7 @@ private fun GlassPreview() {
 @Composable
 private fun ThemeStep(vm: AppViewModel) {
     val settings by vm.store.settings.collectAsStateWithLifecycle()
-    StepPage("Light or dark?", "Follow your phone, or pick one.") {
+    StepPage(stringResource(R.string.light_or_dark), stringResource(R.string.light_or_dark_desc)) {
         Icon(
             Icons.Filled.DarkMode, null,
             tint = MaterialTheme.colorScheme.primary,
@@ -299,15 +314,15 @@ private fun ThemeStep(vm: AppViewModel) {
         )
         Spacer(Modifier.height(8.dp))
         SegmentedChoice(
-            options = ThemeMode.entries.map { it.label },
+            options = ThemeMode.entries.map { stringResource(it.label) },
             selected = settings.themeMode.ordinal,
             onSelect = { i -> vm.store.updateSettings { it.copy(themeMode = ThemeMode.entries[i]) } },
         )
         AppCard(Modifier.fillMaxWidth()) {
             Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("Dynamic colours", style = MaterialTheme.typography.titleMedium)
-                    Text("Use colours from your wallpaper", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.dynamic_colours), style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.dynamic_colours_desc), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Switch(
                     checked = settings.dynamicColor,
@@ -327,7 +342,7 @@ private fun LocationStep(vm: AppViewModel) {
     val permission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
         granted = result.values.any { it }
     }
-    StepPage("Stops near you", "gRide uses your location to show nearby stops and to start trips where you are. It never leaves your phone except as the start of a search.") {
+    StepPage(stringResource(R.string.stops_near_you), stringResource(R.string.location_desc)) {
         Icon(
             Icons.Filled.MyLocation, null,
             tint = MaterialTheme.colorScheme.primary,
@@ -336,14 +351,14 @@ private fun LocationStep(vm: AppViewModel) {
         Spacer(Modifier.height(8.dp))
         if (granted) {
             Text(
-                "Location is on. You're all set!",
+                stringResource(R.string.location_on),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
         } else {
             SecondaryAction(
-                "Allow location",
+                stringResource(R.string.allow_location),
                 { permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
                 Modifier.align(Alignment.CenterHorizontally),
                 icon = Icons.Filled.MyLocation,

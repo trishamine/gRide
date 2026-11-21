@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,11 +37,11 @@ fun UpdateDialog(vm: AppViewModel) {
     AlertDialog(
         onDismissRequest = { if (!downloading) vm.dismissUpdate() },
         icon = { Icon(Icons.Filled.SystemUpdate, null) },
-        title = { Text(if (release != null) "gRide ${release.version} is here" else "Update") },
+        title = { Text(if (release != null) stringResource(R.string.update_title, release.version) else stringResource(R.string.update)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    "You have version ${vm.installedVersion}.",
+                    stringResource(R.string.you_have_version, vm.installedVersion),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 if (!release?.notes.isNullOrBlank()) {
@@ -51,10 +54,10 @@ fun UpdateDialog(vm: AppViewModel) {
                 when (state) {
                     is UpdateState.Downloading -> {
                         LinearProgressIndicator(progress = { state.progress }, modifier = Modifier.fillMaxWidth())
-                        Text("Downloading… ${(state.progress * 100).toInt()} %", style = MaterialTheme.typography.labelLarge)
+                        Text(stringResource(R.string.downloading, (state.progress * 100).toInt()), style = MaterialTheme.typography.labelLarge)
                     }
                     is UpdateState.NeedsPermission -> Text(
-                        "Android asks you to allow gRide to install apps. Turn it on, then come back — the update installs right away.",
+                        stringResource(R.string.install_permission_hint),
                         color = MaterialTheme.colorScheme.primary,
                     )
                     is UpdateState.Error -> Text(state.message, color = MaterialTheme.colorScheme.error)
@@ -64,13 +67,13 @@ fun UpdateDialog(vm: AppViewModel) {
         },
         confirmButton = {
             if (!downloading && release != null) {
-                PrimaryAction(if (state is UpdateState.NeedsPermission) "Install" else "Update", vm::startUpdate)
+                PrimaryAction(stringResource(if (state is UpdateState.NeedsPermission) R.string.install else R.string.update), vm::startUpdate)
             }
         },
         dismissButton = {
             if (!downloading) {
-                if (state is UpdateState.Available) TextButton(onClick = vm::skipUpdate) { Text("Skip version") }
-                TextButton(onClick = vm::dismissUpdate) { Text("Later") }
+                if (state is UpdateState.Available) TextButton(onClick = vm::skipUpdate) { Text(stringResource(R.string.skip_version)) }
+                TextButton(onClick = vm::dismissUpdate) { Text(stringResource(R.string.later)) }
             }
         },
     )

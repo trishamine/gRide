@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -86,7 +89,7 @@ fun StopRow(
 fun MoreMenu(items: List<Pair<String, () -> Unit>>) {
     var open by remember { mutableStateOf(false) }
     Box {
-        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreHoriz, "More") }
+        IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreHoriz, stringResource(R.string.more)) }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             items.forEach { (label, action) ->
                 DropdownMenuItem(text = { Text(label) }, onClick = { open = false; action() })
@@ -114,11 +117,11 @@ fun TimeDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("When?") },
+        title = { Text(stringResource(R.string.when_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 SegmentedChoice(
-                    options = modes.map { if (it == TimeMode.NOW) "Now" else it.label },
+                    options = modes.map { if (it == TimeMode.NOW) stringResource(R.string.now) else stringResource(it.label) },
                     selected = modeIndex,
                     onSelect = { modeIndex = it },
                 )
@@ -126,8 +129,8 @@ fun TimeDialog(
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(7) { i ->
                             val label = when (i) {
-                                0 -> "Today"
-                                1 -> "Tomorrow"
+                                0 -> stringResource(R.string.today)
+                                1 -> stringResource(R.string.tomorrow)
                                 else -> today.plusDays(i.toLong()).format(dayFormat)
                             }
                             FilterChip(selected = dayOffset == i, onClick = { dayOffset = i }, label = { Text(label) })
@@ -143,11 +146,14 @@ fun TimeDialog(
                 val time = if (mode == TimeMode.NOW) ZonedDateTime.now(TransitZone)
                 else today.plusDays(dayOffset.toLong()).atTime(picker.hour, picker.minute).atZone(TransitZone)
                 onConfirm(mode, time)
-            }) { Text("Done") }
+            }) { Text(stringResource(R.string.done)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } },
     )
 }
 
-fun platformLabel(raw: String): String =
-    raw.replace("Bstg.", "Bay").replace("Gleis", "Platform").replace("Steig", "Bay").trim()
+@Composable
+fun platformLabel(raw: String): String {
+    val clean = raw.replace("Bstg.", "").replace("Gleis", "").replace("Steig", "").trim()
+    return if (clean.isBlank()) "" else stringResource(R.string.platform, clean)
+}

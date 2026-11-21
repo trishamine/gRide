@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -59,76 +62,78 @@ fun SettingsScreen(vm: AppViewModel) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            "Settings",
+            stringResource(R.string.tab_settings),
             Modifier.padding(start = 8.dp, top = 16.dp, bottom = 4.dp),
             style = MaterialTheme.typography.headlineLarge,
         )
 
-        SettingsCard("Design", "Choose how gRide looks.") {
+        SettingsCard(stringResource(R.string.language), null) {
+            LanguagePicker()
+        }
+
+        SettingsCard(stringResource(R.string.design), stringResource(R.string.design_desc)) {
             SegmentedChoice(
-                options = listOf("Expressive", "Liquid Glass"),
+                options = listOf(stringResource(R.string.style_expressive), stringResource(R.string.style_glass)),
                 selected = settings.uiStyle.ordinal,
                 onSelect = { i -> vm.store.updateSettings { it.copy(uiStyle = UiStyle.entries[i]) } },
             )
             Text(
                 if (settings.uiStyle == UiStyle.EXPRESSIVE)
-                    "Material 3 Expressive: bold shapes, springy motion and tonal surfaces."
+                    stringResource(R.string.expressive_desc)
                 else
-                    "Liquid Glass: floating, refracting glass panels over the map. Press a glass control to see it grow and light up.",
+                    stringResource(R.string.glass_desc),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
-        SettingsCard("Theme", null) {
+        SettingsCard(stringResource(R.string.theme), null) {
             SegmentedChoice(
-                options = ThemeMode.entries.map { it.label },
+                options = ThemeMode.entries.map { stringResource(it.label) },
                 selected = settings.themeMode.ordinal,
                 onSelect = { i -> vm.store.updateSettings { it.copy(themeMode = ThemeMode.entries[i]) } },
             )
             SwitchRow(
-                "Dynamic colours",
-                "Use colours from your wallpaper",
+                stringResource(R.string.dynamic_colours),
+                stringResource(R.string.dynamic_colours_desc),
                 settings.dynamicColor,
             ) { v -> vm.store.updateSettings { it.copy(dynamicColor = v) } }
         }
 
-        SettingsCard("Departures", null) {
+        SettingsCard(stringResource(R.string.tab_departures), null) {
             SwitchRow(
-                "Auto-refresh",
-                "Reload departures every 30 seconds",
+                stringResource(R.string.auto_refresh),
+                stringResource(R.string.auto_refresh_desc),
                 settings.autoRefresh,
             ) { v -> vm.store.updateSettings { it.copy(autoRefresh = v) } }
         }
 
-        SettingsCard("Updates", "gRide ${vm.installedVersion}") {
+        SettingsCard(stringResource(R.string.updates), stringResource(R.string.version, vm.installedVersion)) {
             val status = when (val u = vm.update) {
-                UpdateState.Checking -> "Checking…"
-                UpdateState.UpToDate -> "You have the latest version."
-                is UpdateState.Available -> "Version ${u.release.version} is available."
-                is UpdateState.Downloading -> "Downloading ${(u.progress * 100).toInt()} %…"
-                is UpdateState.NeedsPermission -> "Allow gRide to install updates to finish."
+                UpdateState.Checking -> stringResource(R.string.checking)
+                UpdateState.UpToDate -> stringResource(R.string.latest_version)
+                is UpdateState.Available -> stringResource(R.string.version_available, u.release.version)
+                is UpdateState.Downloading -> stringResource(R.string.downloading, (u.progress * 100).toInt())
+                is UpdateState.NeedsPermission -> stringResource(R.string.allow_install_finish)
                 is UpdateState.Error -> u.message
                 UpdateState.Idle -> null
             }
             if (status != null) Text(status, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (vm.update is UpdateState.Available || vm.update is UpdateState.NeedsPermission) {
-                PrimaryAction("Update now", vm::openUpdateDialog, icon = Icons.Filled.SystemUpdate)
+                PrimaryAction(stringResource(R.string.update_now), vm::openUpdateDialog, icon = Icons.Filled.SystemUpdate)
             } else {
-                SecondaryAction("Check for updates", { vm.checkForUpdates(manual = true) }, icon = Icons.Filled.Refresh)
+                SecondaryAction(stringResource(R.string.check_updates), { vm.checkForUpdates(manual = true) }, icon = Icons.Filled.Refresh)
             }
         }
 
-        SettingsCard("History", "Removes recent stops and trips. Favourites are kept.") {
-            SecondaryAction("Clear history", { vm.store.clearHistory() }, icon = Icons.Filled.DeleteSweep)
+        SettingsCard(stringResource(R.string.history), stringResource(R.string.history_desc)) {
+            SecondaryAction(stringResource(R.string.clear_history), { vm.store.clearHistory() }, icon = Icons.Filled.DeleteSweep)
         }
 
-        SettingsCard("About", null) {
+        SettingsCard(stringResource(R.string.about), null) {
             VersionText(vm, settings.secretUnlocked)
             Text(
-                "Timetables and realtime data: Transitous (transitous.org), based on DELFI open data. Non-commercial use.\n" +
-                    "Map: © OpenStreetMap contributors.\n" +
-                    "Liquid Glass: Kyant0/AndroidLiquidGlass (backdrop).",
+                stringResource(R.string.about_text),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -144,7 +149,7 @@ private fun VersionText(vm: AppViewModel, unlocked: Boolean) {
     var lastTap by remember { mutableLongStateOf(0L) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-            "gRide ${vm.installedVersion}",
+            stringResource(R.string.version, vm.installedVersion),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.clickable(interactionSource = null, indication = null) {
                 val now = System.currentTimeMillis()
@@ -158,13 +163,13 @@ private fun VersionText(vm: AppViewModel, unlocked: Boolean) {
         )
         if (!unlocked && taps in 2..4) {
             Text(
-                "${5 - taps} more ${if (5 - taps == 1) "tap" else "taps"}…",
+                pluralStringResource(R.plurals.taps_left, 5 - taps, 5 - taps),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
         }
         AnimatedVisibility(unlocked) {
-            SecondaryAction("Secret settings", { vm.push(Overlay.Secret) }, icon = Icons.Filled.AutoAwesome)
+            SecondaryAction(stringResource(R.string.secret_settings), { vm.push(Overlay.Secret) }, icon = Icons.Filled.AutoAwesome)
         }
     }
 }

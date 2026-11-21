@@ -7,7 +7,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.json.JSONArray
 
 enum class UiStyle(val label: String) { EXPRESSIVE("Material 3 Expressive"), LIQUID_GLASS("Liquid Glass") }
-enum class ThemeMode(val label: String) { SYSTEM("System"), LIGHT("Light"), DARK("Dark") }
+enum class ThemeMode(@androidx.annotation.StringRes val label: Int) {
+    SYSTEM(org.devbucket.gRide.R.string.theme_system), LIGHT(org.devbucket.gRide.R.string.theme_light), DARK(org.devbucket.gRide.R.string.theme_dark)
+}
 
 data class Settings(
     val uiStyle: UiStyle = UiStyle.EXPRESSIVE,

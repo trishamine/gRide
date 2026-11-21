@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -85,8 +88,8 @@ fun TripScreen(vm: AppViewModel) {
         },
     ) {
         Row(Modifier.padding(start = 24.dp, end = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text("Public transport", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
-            IconButton(onClick = vm::planTrip) { Icon(Icons.Filled.Refresh, "Refresh") }
+            Text(stringResource(R.string.public_transport), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            IconButton(onClick = vm::planTrip) { Icon(Icons.Filled.Refresh, stringResource(R.string.refresh)) }
         }
         LazyRow(
             Modifier.padding(vertical = 8.dp),
@@ -99,7 +102,7 @@ fun TripScreen(vm: AppViewModel) {
                     onClick = { showTime = true },
                     leadingIcon = { Icon(Icons.Filled.Schedule, null) },
                     trailingIcon = { Icon(Icons.Filled.ArrowDropDown, null) },
-                    label = { Text(if (vm.timeMode == TimeMode.NOW) "Leave now" else "${vm.timeMode.label} ${vm.tripTime.hhmm()}") },
+                    label = { Text(if (vm.timeMode == TimeMode.NOW) stringResource(R.string.leave_now) else "${stringResource(vm.timeMode.label)} ${vm.tripTime.hhmm()}") },
                     colors = chipColors(),
                 )
             }
@@ -108,7 +111,7 @@ fun TripScreen(vm: AppViewModel) {
                 FilterChip(
                     selected = g !in vm.excludedModes,
                     onClick = { vm.toggleMode(g) },
-                    label = { Text(g.label) },
+                    label = { Text(stringResource(g.label)) },
                     colors = chipColors(),
                 )
             }
@@ -116,12 +119,12 @@ fun TripScreen(vm: AppViewModel) {
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 16.dp)) {
             when (val j = vm.journeys) {
                 Load.Idle -> item {
-                    EmptyState(if (vm.tripFrom == null) "Choose where you start." else "Choose your destination.")
+                    EmptyState(if (vm.tripFrom == null) stringResource(R.string.choose_start_hint) else stringResource(R.string.choose_destination_hint))
                 }
                 Load.Loading -> item { LoadingState() }
                 is Load.Error -> item { ErrorState(j.message, onRetry = vm::planTrip) }
                 is Load.Ok -> {
-                    if (j.data.isEmpty()) item { EmptyState("No connections found. Try another time or allow more transport modes.") }
+                    if (j.data.isEmpty()) item { EmptyState(stringResource(R.string.no_connections)) }
                     itemsIndexed(j.data) { index, journey ->
                         JourneyRow(journey, onClick = { vm.openJourney(index) })
                         RowDivider()
@@ -131,8 +134,8 @@ fun TripScreen(vm: AppViewModel) {
                             Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
-                            SecondaryAction("Earlier", { vm.shiftTrips(later = false) }, Modifier.weight(1f))
-                            SecondaryAction("Later", { vm.shiftTrips(later = true) }, Modifier.weight(1f))
+                            SecondaryAction(stringResource(R.string.earlier), { vm.shiftTrips(later = false) }, Modifier.weight(1f))
+                            SecondaryAction(stringResource(R.string.later), { vm.shiftTrips(later = true) }, Modifier.weight(1f))
                         }
                     }
                 }
@@ -158,18 +161,18 @@ private fun FromToCard(vm: AppViewModel, modifier: Modifier) {
         Row(Modifier.padding(start = 16.dp, end = 4.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 PointRow(
-                    text = vm.tripFrom?.fullName ?: "Choose start",
+                    text = vm.tripFrom?.fullName ?: stringResource(R.string.choose_start),
                     start = true,
                     onClick = { vm.openSearch(SearchTarget.FROM) },
                 )
                 RowDivider(start = 32.dp)
                 PointRow(
-                    text = vm.tripTo?.fullName ?: "Choose destination",
+                    text = vm.tripTo?.fullName ?: stringResource(R.string.choose_destination),
                     start = false,
                     onClick = { vm.openSearch(SearchTarget.TO) },
                 )
             }
-            IconButton(onClick = vm::swapTrip) { Icon(Icons.Filled.SwapVert, "Swap") }
+            IconButton(onClick = vm::swapTrip) { Icon(Icons.Filled.SwapVert, stringResource(R.string.swap)) }
         }
     }
 }
@@ -204,7 +207,7 @@ fun JourneyRow(journey: Journey, onClick: () -> Unit) {
                 if (mins >= 60) "${mins / 60}:${"%02d".format(mins % 60)}" else "$mins",
                 style = MaterialTheme.typography.displaySmall,
             )
-            Text(if (mins >= 60) "h" else "min", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(if (mins >= 60) R.string.unit_h else R.string.unit_min), style = MaterialTheme.typography.titleMedium)
         }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -235,7 +238,7 @@ fun JourneyRow(journey: Journey, onClick: () -> Unit) {
             val first = journey.firstTransit
             if (first != null) {
                 Text(
-                    "Departs ${first.from.time.hhmm()} from ${first.from.name}",
+                    stringResource(R.string.departs_from, first.from.time.hhmm(), first.from.name),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2, overflow = TextOverflow.Ellipsis,
@@ -245,7 +248,7 @@ fun JourneyRow(journey: Journey, onClick: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary)
                 }
             } else {
-                Text("Walk the whole way", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.walk_whole_way), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

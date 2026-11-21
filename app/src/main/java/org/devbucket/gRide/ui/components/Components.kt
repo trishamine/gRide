@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.components
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
@@ -92,20 +95,24 @@ private val HHMM = DateTimeFormatter.ofPattern("HH:mm")
 fun Instant?.hhmm(): String = this?.atZone(TransitZone)?.format(HHMM) ?: "–"
 fun ZonedDateTime.hhmm(): String = withZoneSameInstant(TransitZone).format(HHMM)
 
+@Composable
 fun relative(instant: Instant): String {
     val mins = Duration.between(Instant.now(), instant).toMinutes()
     return when {
-        mins <= 0 -> "Now"
-        mins < 60 -> "In $mins min"
+        mins <= 0 -> stringResource(R.string.now)
+        mins < 60 -> stringResource(R.string.in_minutes, mins.toInt())
         else -> instant.hhmm()
     }
 }
 
+@Composable
 fun durationText(minutes: Long): String =
-    if (minutes >= 60) "${minutes / 60} h ${minutes % 60} min" else "$minutes min"
+    if (minutes >= 60) stringResource(R.string.duration_h_min, (minutes / 60).toInt(), (minutes % 60).toInt())
+    else stringResource(R.string.duration_min, minutes.toInt())
 
+@Composable
 fun distanceText(meters: Float): String =
-    if (meters < 1000) "${meters.toInt()} m away" else "%.1f km away".format(meters / 1000f)
+    if (meters < 1000) stringResource(R.string.distance_m, meters.toInt()) else stringResource(R.string.distance_km, meters / 1000f)
 
 // ----------------------------------------------------------------- badges
 
@@ -125,7 +132,7 @@ fun LineBadge(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            number.ifBlank { mode.label },
+            number.ifBlank { stringResource(mode.label) },
             color = if (mode == Mode.REGIONAL_BUS) Color(0xFF14240A) else Color.White,
             fontWeight = FontWeight.Bold,
             style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.titleMedium,
@@ -305,7 +312,7 @@ fun RoundIconButton(
 /** The one back button used on every screen, so it always has the same size and place. */
 @Composable
 fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    RoundIconButton(androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack, "Back", onClick = onClick, modifier = modifier, size = 52.dp)
+    RoundIconButton(androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back), onClick = onClick, modifier = modifier, size = 52.dp)
 }
 
 @Composable
@@ -462,7 +469,7 @@ fun ErrorState(message: String, onRetry: (() -> Unit)?, modifier: Modifier = Mod
     ) {
         Icon(Icons.Outlined.ErrorOutline, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(40.dp))
         Text(message, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        if (onRetry != null) TextButton(onClick = onRetry) { Text("Try again") }
+        if (onRetry != null) TextButton(onClick = onRetry) { Text(stringResource(R.string.try_again)) }
     }
 }
 

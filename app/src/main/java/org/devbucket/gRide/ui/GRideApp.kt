@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -90,12 +93,12 @@ import org.devbucket.gRide.ui.theme.isDark
 /** Space the floating navigation bar takes at the bottom of the screen. */
 val LocalBottomBarHeight = staticCompositionLocalOf { 0.dp }
 
-private data class TabItem(val tab: Tab, val label: String, val icon: ImageVector, val selectedIcon: ImageVector)
+private data class TabItem(val tab: Tab, @androidx.annotation.StringRes val label: Int, val icon: ImageVector, val selectedIcon: ImageVector)
 
 private val tabs = listOf(
-    TabItem(Tab.START, "Start", Icons.Outlined.Home, Icons.Filled.Home),
-    TabItem(Tab.DEPARTURES, "Departures", Icons.Outlined.DepartureBoard, Icons.Filled.DepartureBoard),
-    TabItem(Tab.SETTINGS, "Settings", Icons.Outlined.Settings, Icons.Filled.Settings),
+    TabItem(Tab.START, R.string.tab_start, Icons.Outlined.Home, Icons.Filled.Home),
+    TabItem(Tab.DEPARTURES, R.string.tab_departures, Icons.Outlined.DepartureBoard, Icons.Filled.DepartureBoard),
+    TabItem(Tab.SETTINGS, R.string.tab_settings, Icons.Outlined.Settings, Icons.Filled.Settings),
 )
 
 @Composable
@@ -248,7 +251,7 @@ private fun ExpressiveNavBar(selected: Tab, onSelect: (Tab) -> Unit) {
                 selected = item.tab == selected,
                 onClick = { onSelect(item.tab) },
                 icon = { Icon(if (item.tab == selected) item.selectedIcon else item.icon, null) },
-                label = { Text(item.label, maxLines = 1) },
+                label = { Text(stringResource(item.label), maxLines = 1) },
             )
         }
     }
@@ -290,9 +293,9 @@ private fun GlassNavBar(selected: Tab, onSelect: (Tab) -> Unit) {
                             verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
                         ) {
                             val tint = if (sel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            Icon(if (sel) item.selectedIcon else item.icon, item.label, tint = tint)
+                            Icon(if (sel) item.selectedIcon else item.icon, stringResource(item.label), tint = tint)
                             Text(
-                                item.label,
+                                stringResource(item.label),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = tint,
                                 fontWeight = if (sel) FontWeight.Bold else FontWeight.Medium,

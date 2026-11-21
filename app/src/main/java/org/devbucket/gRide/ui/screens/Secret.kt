@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,7 +37,7 @@ fun SecretScreen(vm: AppViewModel) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             BackButton(vm::back)
             Spacer(Modifier.width(16.dp))
-            Text("Secret settings", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.secret_settings), style = MaterialTheme.typography.headlineSmall)
         }
         Column(
             Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp),
@@ -42,22 +45,22 @@ fun SecretScreen(vm: AppViewModel) {
         ) {
             AppCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Setup", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.setup), style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "Play the welcome animation and setup again. Your favourites and history stay.",
+                        stringResource(R.string.replay_setup_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    PrimaryAction("Replay setup", vm::replaySetup, icon = Icons.Filled.Replay)
+                    PrimaryAction(stringResource(R.string.replay_setup), vm::replaySetup, icon = Icons.Filled.Replay)
                 }
             }
             AppCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text("Hide this menu", style = MaterialTheme.typography.titleLarge)
+                    Text(stringResource(R.string.hide_menu), style = MaterialTheme.typography.titleLarge)
                     Text(
-                        "Removes the button from Settings. Tap the version 5 times to get it back.",
+                        stringResource(R.string.hide_menu_desc),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    SecondaryAction("Hide secret settings", {
+                    SecondaryAction(stringResource(R.string.hide_secret), {
                         vm.store.updateSettings { it.copy(secretUnlocked = false) }
                         vm.back()
                     }, icon = Icons.Filled.VisibilityOff)

@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import org.devbucket.gRide.data.Departure
 import org.devbucket.gRide.data.VehicleRun
 import org.devbucket.gRide.data.TransitApi
+import org.devbucket.gRide.data.RateLimitedException
+import org.devbucket.gRide.R
 import org.devbucket.gRide.data.AppRelease
 import org.devbucket.gRide.data.Updater
 import java.io.File
@@ -56,7 +58,9 @@ sealed interface Overlay {
     data object Secret : Overlay
 }
 
-enum class TimeMode(val label: String) { NOW("Leave now"), DEPART("Depart"), ARRIVE("Arrive") }
+enum class TimeMode(@androidx.annotation.StringRes val label: Int) {
+    NOW(R.string.leave_now), DEPART(R.string.depart), ARRIVE(R.string.arrive)
+}
 
 sealed interface UpdateState {
     data object Idle : UpdateState
@@ -133,6 +137,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setForeground(visible: Boolean) {
         inForeground = visible
         if (visible) {
+            if (store.settings.value.setupDone) checkForUpdates(manual = false)
             (update as? UpdateState.NeedsPermission)?.let { if (Updater.canInstall(getApplication())) installUpdate(it.release, it.file) }
             boardStop?.let { if (sheetStop != null || overlay is Overlay.StopBoard) startBoard(it, showLoading = false) }
             (overlay as? Overlay.Run)?.let { loadRun(it.departure) }
@@ -257,7 +262,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    if (board !is Load.Ok) board = Load.Error(e.message ?: "Could not load departures")
+                    if (board !is Load.Ok) board = Load.Error(errorText(e, R.string.err_departures))
                 }
                 if (!store.settings.value.autoRefresh || boardTime != null || !inForeground) break
                 delay(REFRESH_MS)
@@ -294,7 +299,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             nearby = Load.Loading
             val loc = LocationProvider.current(getApplication())
             if (loc == null) {
-                nearby = Load.Error("Your location is not available. Turn on location and try again.")
+                nearby = Load.Error(str(R.string.err_location))
                 return@launch
             }
             userLocation = loc
@@ -303,7 +308,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Load.Error(e.message ?: "Could not load nearby stops")
+                Load.Error(errorText(e, R.string.err_nearby))
             }
         }
     }
@@ -342,7 +347,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Load.Error(e.message ?: "Search failed")
+                Load.Error(errorText(e, R.string.err_search))
             }
         }
     }
@@ -366,15 +371,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val loc = LocationProvider.current(getApplication())
             if (loc == null) {
-                searchResults = Load.Error("Your location is not available.")
+                searchResults = Load.Error(str(R.string.err_location))
                 return@launch
             }
             userLocation = loc
             if (target.stopsOnly) {
                 val stop = runCatching { TransitApi.nearbyStops(loc.lat, loc.lon, 1000).firstOrNull() }.getOrNull()
-                if (stop != null) choose(stop, target) else searchResults = Load.Error("No stop nearby.")
+                if (stop != null) choose(stop, target) else searchResults = Load.Error(str(R.string.err_no_stop_nearby))
             } else {
-                choose(Place.currentLocation(loc.lat, loc.lon), target)
+                choose(Place.currentLocation(loc.lat, loc.lon, str(R.string.current_location)), target)
             }
         }
     }
@@ -398,12 +403,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         journeys = Load.Idle
         mapJourney = null
         // Always start from where the user is right now.
-        tripFrom = userLocation?.let { Place.currentLocation(it.lat, it.lon) }
+        tripFrom = userLocation?.let { Place.currentLocation(it.lat, it.lon, str(R.string.current_location)) }
         if (LocationProvider.hasPermission(getApplication())) {
             viewModelScope.launch {
                 LocationProvider.current(getApplication())?.let {
                     userLocation = it
-                    if (tripFrom == null || tripFrom?.type == LocationType.COORD) tripFrom = Place.currentLocation(it.lat, it.lon)
+                    if (tripFrom == null || tripFrom?.type == LocationType.COORD) tripFrom = Place.currentLocation(it.lat, it.lon, str(R.string.current_location))
                 }
             }
         }
@@ -474,7 +479,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Load.Error(e.message ?: "Could not find connections")
+                Load.Error(errorText(e, R.string.err_connections))
             }
             showJourneysOnMap()
         }
@@ -521,7 +526,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
-                    if (run !is Load.Ok) run = Load.Error(e.message ?: "Could not load this departure")
+                    if (run !is Load.Ok) run = Load.Error(errorText(e, R.string.err_run))
                 }
                 if (!store.settings.value.autoRefresh || !inForeground) break
                 delay(REFRESH_MS)
@@ -537,11 +542,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val installedVersion: String = Updater.installedVersion(app)
     private val updatePrefs = app.getSharedPreferences("gride_updates", android.content.Context.MODE_PRIVATE)
 
-    /** Automatic checks run at most every 6 hours; [manual] checks always run and always report. */
+    private var updateCheckRunning = false
+
+    /**
+     * Runs quietly in the background every time the app is opened or comes back to the screen
+     * (at most once per 2 minutes, to stay well within GitHub's limit of 60 checks per hour).
+     * [manual] checks always run and always report the result.
+     */
     fun checkForUpdates(manual: Boolean) {
-        if (update is UpdateState.Checking || update is UpdateState.Downloading) return
+        if (updateCheckRunning || update is UpdateState.Downloading || update is UpdateState.NeedsPermission) return
         val now = System.currentTimeMillis()
-        if (!manual && now - updatePrefs.getLong("lastCheck", 0) < 6 * 3600_000L) return
+        if (!manual && now - updatePrefs.getLong("lastCheck", 0) < 2 * 60_000L) return
+        updateCheckRunning = true
         viewModelScope.launch {
             if (manual) update = UpdateState.Checking
             try {
@@ -556,7 +568,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                update = if (manual) UpdateState.Error(e.message ?: "Could not check for updates") else UpdateState.Idle
+                update = if (manual) UpdateState.Error(errorText(e, R.string.err_update_check)) else UpdateState.Idle
+            } finally {
+                updateCheckRunning = false
             }
         }
     }
@@ -575,7 +589,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                update = UpdateState.Error(e.message ?: "Download failed")
+                update = UpdateState.Error(errorText(e, R.string.err_download))
             }
         }
     }
@@ -611,6 +625,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         overlays.clear()
         tab = Tab.START
         if (LocationProvider.hasPermission(getApplication())) locateMe(moveCamera = true)
+        checkForUpdates(manual = false)
     }
 
     fun replaySetup() {
@@ -622,7 +637,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         if (LocationProvider.hasPermission(app)) locateMe(moveCamera = true)
-        if (store.settings.value.setupDone) checkForUpdates(manual = false)
+    }
+
+    private fun str(id: Int, vararg args: Any): String = getApplication<Application>().getString(id, *args)
+
+    /** A message in the app's language: rate limit and offline get their own text, else [fallback]. */
+    private fun errorText(e: Exception, fallback: Int): String = when (e) {
+        is RateLimitedException -> str(R.string.err_rate_limited, e.until.atZone(TransitZone).toLocalTime().withNano(0).toString())
+        is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException -> str(R.string.err_offline)
+        else -> str(fallback)
     }
 
     private companion object {

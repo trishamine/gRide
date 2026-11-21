@@ -1,0 +1,209 @@
+<resources>
+    <!-- navigation -->
+    <string name="tab_start">Start</string>
+    <string name="tab_departures">Abfahrten</string>
+    <string name="tab_settings">Einstellungen</string>
+    <string name="back">Zurück</string>
+    <string name="next">Weiter</string>
+    <string name="close">Schließen</string>
+    <string name="more">Mehr</string>
+    <string name="done">Fertig</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="try_again">Erneut versuchen</string>
+    <string name="clear">Löschen</string>
+    <string name="delete">Löschen</string>
+
+    <!-- transport modes -->
+    <string name="mode_train">Zug</string>
+    <string name="mode_sbahn">S-Bahn</string>
+    <string name="mode_tram">Tram</string>
+    <string name="mode_city_bus">Stadtbus</string>
+    <string name="mode_regional_bus">Regionalbus</string>
+    <string name="mode_on_demand">Rufbus</string>
+    <string name="mode_walk">Fußweg</string>
+    <string name="mode_other">Sonstige</string>
+    <string name="group_bus">Bus</string>
+
+    <!-- time and distance -->
+    <string name="now">Jetzt</string>
+    <string name="now_lower">jetzt</string>
+    <string name="in_minutes">In %d Min.</string>
+    <string name="duration_min">%d Min.</string>
+    <string name="duration_h_min">%1$d Std. %2$d Min.</string>
+    <string name="unit_min">Min.</string>
+    <string name="unit_h">Std.</string>
+    <string name="distance_m">%d m entfernt</string>
+    <string name="distance_km">%.1f km entfernt</string>
+    <string name="today">Heute</string>
+    <string name="tomorrow">Morgen</string>
+    <string name="when_title">Wann?</string>
+    <string name="platform">Steig %s</string>
+
+    <!-- start -->
+    <string name="my_location">Mein Standort</string>
+    <string name="where_to">Wohin?</string>
+    <string name="plan_a_trip">Fahrt planen</string>
+    <string name="favourites_history">Favoriten &amp; Verlauf</string>
+    <string name="trips_empty">Deine geplanten Fahrten erscheinen hier. Markiere sie mit einem Stern, damit sie oben bleiben.</string>
+    <string name="plan_trip">Fahrt planen</string>
+    <string name="return_trip">Rückfahrt</string>
+    <string name="favourite">Favorit</string>
+    <string name="unfavourite">Kein Favorit mehr</string>
+    <string name="add_favourite">Zu Favoriten hinzufügen</string>
+    <string name="remove_favourite">Aus Favoriten entfernen</string>
+
+    <!-- departures -->
+    <string name="search_stop">Haltestelle suchen</string>
+    <string name="stops_nearby">In der Nähe</string>
+    <string name="departures_empty">Suche eine Haltestelle, um ihre Abfahrten zu sehen. Deine Lieblings- und letzten Haltestellen erscheinen hier.</string>
+    <string name="show_on_map">Auf der Karte zeigen</string>
+    <string name="recent">Zuletzt</string>
+    <string name="remove_history">Aus dem Verlauf entfernen</string>
+    <string name="location_needed">Erlaube den Standortzugriff, um Haltestellen in deiner Nähe zu sehen.</string>
+    <string name="allow_location">Standort erlauben</string>
+    <string name="no_stops_nearby">Keine Haltestellen im Umkreis von 1,2 km.</string>
+    <string name="start_journey_here">Fahrt von hier starten</string>
+    <string name="as_destination">Als Ziel</string>
+    <string name="map">Karte</string>
+    <string name="share">Teilen</string>
+    <string name="share_title">Abfahrten an %s</string>
+    <string name="departure_at">Abfahrt, %s</string>
+    <string name="no_departures">Keine Abfahrten in den nächsten Stunden.</string>
+    <string name="updated_at">Aktualisiert %s</string>
+    <string name="refreshes">· wird jede Minute aktualisiert</string>
+    <string name="direction">Richtung %s</string>
+    <string name="cancelled">Fällt aus</string>
+
+    <!-- departure details -->
+    <string name="departure_details">Abfahrtsdetails</string>
+    <string name="your_stop">Deine Haltestelle</string>
+    <plurals name="previous_stops">
+        <item quantity="one">%d vorheriger Halt</item>
+        <item quantity="other">%d vorherige Halte</item>
+    </plurals>
+    <plurals name="stops_until_last">
+        <item quantity="one">Noch %d Halt bis zur Endhaltestelle</item>
+        <item quantity="other">Noch %d Halte bis zur Endhaltestelle</item>
+    </plurals>
+
+    <!-- search -->
+    <string name="where_start">Wo startest du?</string>
+    <string name="nearest_stop">Nächste Haltestelle</string>
+    <string name="current_location">Aktueller Standort</string>
+    <string name="use_position">Deinen Standort verwenden</string>
+    <string name="favourite_stops">Lieblingshaltestellen</string>
+    <string name="nothing_found">Nichts gefunden für „%s“.</string>
+
+    <!-- trip -->
+    <string name="public_transport">Öffentlicher Verkehr</string>
+    <string name="leave_now">Jetzt losfahren</string>
+    <string name="depart">Abfahrt</string>
+    <string name="arrive">Ankunft</string>
+    <string name="choose_start_hint">Wähle, wo du startest.</string>
+    <string name="choose_destination_hint">Wähle dein Ziel.</string>
+    <string name="no_connections">Keine Verbindungen gefunden. Versuch eine andere Zeit oder erlaube mehr Verkehrsmittel.</string>
+    <string name="earlier">Früher</string>
+    <string name="later">Später</string>
+    <string name="choose_start">Start wählen</string>
+    <string name="choose_destination">Ziel wählen</string>
+    <string name="swap">Tauschen</string>
+    <string name="departs_from">Ab %1$s von %2$s</string>
+    <string name="walk_whole_way">Den ganzen Weg zu Fuß</string>
+
+    <!-- journey -->
+    <string name="connection_gone">Diese Verbindung ist nicht mehr verfügbar.</string>
+    <string name="direct">direkt</string>
+    <plurals name="changes">
+        <item quantity="one">%d Umstieg</item>
+        <item quantity="other">%d Umstiege</item>
+    </plurals>
+    <string name="no_stop_between">Kein Halt dazwischen</string>
+    <plurals name="stops">
+        <item quantity="one">%d Halt</item>
+        <item quantity="other">%d Halte</item>
+    </plurals>
+    <string name="walk_to">%1$s zu Fuß bis %2$s</string>
+
+    <!-- settings -->
+    <string name="language">Sprache</string>
+    <string name="language_system">Systemsprache</string>
+    <string name="design">Design</string>
+    <string name="design_desc">Wähle, wie gRide aussieht.</string>
+    <string name="style_expressive">Expressive</string>
+    <string name="style_glass">Liquid Glass</string>
+    <string name="expressive_desc">Material 3 Expressive: kräftige Formen, federnde Bewegungen und farbige Flächen.</string>
+    <string name="glass_desc">Liquid Glass: schwebende, lichtbrechende Glasflächen über der Karte. Drück auf ein Glaselement, um zu sehen, wie es wächst und aufleuchtet.</string>
+    <string name="theme">Farbschema</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="dynamic_colours">Dynamische Farben</string>
+    <string name="dynamic_colours_desc">Farben deines Hintergrundbilds verwenden</string>
+    <string name="auto_refresh">Automatisch aktualisieren</string>
+    <string name="auto_refresh_desc">Abfahrten jede Minute neu laden</string>
+    <string name="updates">Updates</string>
+    <string name="version">gRide %s</string>
+    <string name="checking">Suche nach Updates…</string>
+    <string name="latest_version">Du hast die neueste Version.</string>
+    <string name="version_available">Version %s ist verfügbar.</string>
+    <string name="downloading">Wird heruntergeladen… %d %%</string>
+    <string name="allow_install_finish">Erlaube gRide, Updates zu installieren, um fertig zu werden.</string>
+    <string name="update_now">Jetzt aktualisieren</string>
+    <string name="check_updates">Nach Updates suchen</string>
+    <string name="history">Verlauf</string>
+    <string name="history_desc">Löscht letzte Haltestellen und Fahrten. Favoriten bleiben erhalten.</string>
+    <string name="clear_history">Verlauf löschen</string>
+    <string name="about">Über gRide</string>
+    <string name="about_text">Fahrpläne und Echtzeitdaten: Transitous (transitous.org), auf Basis der DELFI-Open-Data. Nur nicht-kommerzielle Nutzung.\nKarte: © OpenStreetMap-Mitwirkende.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
+    <plurals name="taps_left">
+        <item quantity="one">Noch %d Tipp…</item>
+        <item quantity="other">Noch %d Tipps…</item>
+    </plurals>
+
+    <!-- secret settings -->
+    <string name="secret_settings">Geheime Einstellungen</string>
+    <string name="setup">Einrichtung</string>
+    <string name="replay_setup_desc">Spielt die Willkommensanimation und die Einrichtung noch einmal ab. Deine Favoriten und dein Verlauf bleiben.</string>
+    <string name="replay_setup">Einrichtung wiederholen</string>
+    <string name="hide_menu">Dieses Menü ausblenden</string>
+    <string name="hide_menu_desc">Entfernt den Knopf aus den Einstellungen. Tippe 5-mal auf die Version, um ihn zurückzuholen.</string>
+    <string name="hide_secret">Geheime Einstellungen ausblenden</string>
+
+    <!-- setup -->
+    <string name="choose_language">Wähle deine Sprache</string>
+    <string name="change_later">Du kannst das später in den Einstellungen ändern.</string>
+    <string name="lets_ride">Los geht\'s</string>
+    <string name="intro_tagline">Busse und Trams in Augsburg.\nLive, auf der Karte, in deinem Stil.</string>
+    <string name="get_started">Loslegen</string>
+    <string name="pick_style">Wähle deinen Stil</string>
+    <string name="expressive_short">Material 3 Expressive: kräftige Formen und federnde Bewegungen</string>
+    <string name="glass_short">Schwebendes, lichtbrechendes Glas über der Karte</string>
+    <string name="glass">Glas</string>
+    <string name="light_or_dark">Hell oder dunkel?</string>
+    <string name="light_or_dark_desc">Wie dein Handy, oder wähle selbst.</string>
+    <string name="stops_near_you">Haltestellen in deiner Nähe</string>
+    <string name="location_desc">gRide nutzt deinen Standort, um Haltestellen in der Nähe zu zeigen und Fahrten dort zu starten, wo du bist. Er verlässt dein Handy nur als Startpunkt einer Suche.</string>
+    <string name="location_on">Standort ist an. Alles bereit!</string>
+
+    <!-- updates -->
+    <string name="update_title">gRide %s ist da</string>
+    <string name="you_have_version">Du hast Version %s.</string>
+    <string name="install_permission_hint">Android fragt, ob gRide Apps installieren darf. Schalte es ein und komm zurück – das Update wird dann sofort installiert.</string>
+    <string name="install">Installieren</string>
+    <string name="update">Aktualisieren</string>
+    <string name="skip_version">Version überspringen</string>
+
+    <!-- errors -->
+    <string name="err_departures">Abfahrten konnten nicht geladen werden.</string>
+    <string name="err_location">Dein Standort ist nicht verfügbar. Schalte den Standort ein und versuch es erneut.</string>
+    <string name="err_nearby">Haltestellen in der Nähe konnten nicht geladen werden.</string>
+    <string name="err_search">Suche fehlgeschlagen.</string>
+    <string name="err_no_stop_nearby">Keine Haltestelle in der Nähe.</string>
+    <string name="err_connections">Keine Verbindungen gefunden.</string>
+    <string name="err_run">Diese Abfahrt konnte nicht geladen werden.</string>
+    <string name="err_update_check">Konnte nicht nach Updates suchen.</string>
+    <string name="err_download">Der Download ist fehlgeschlagen.</string>
+    <string name="err_rate_limited">Zu viele Anfragen. gRide pausiert bis %s.</string>
+    <string name="err_offline">Keine Verbindung zum Server. Prüfe deine Internetverbindung.</string>
+</resources>

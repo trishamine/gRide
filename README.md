@@ -28,7 +28,7 @@ You need JDK 25 (Android Studio's bundled JBR works) and Android SDK 37. minSdk 
 
 ## Releases and in-app updates
 
-The app checks the latest release of [trishamine/gRide](https://github.com/trishamine/gRide/releases) when it starts (at most every 6 hours) and from **Settings → Updates**. When a newer version exists, it shows the release notes, downloads the APK and opens Android's install prompt.
+The app checks the latest release of [trishamine/gRide](https://github.com/trishamine/gRide/releases) in the background every time it's opened or brought back to the screen (at most once every 2 minutes), and from **Settings → Updates**. When a newer version exists, it shows the release notes, downloads the APK and opens Android's install prompt.
 
 To publish a new version:
 
@@ -38,6 +38,8 @@ git push origin v1.2.0
 ```
 
 The `Release` workflow (`.github/workflows/release.yml`) builds a signed APK with that version and attaches it to a new GitHub release.
+
+Tags use `vMAJOR.MINOR.PATCH`, e.g. `v1.1.1` for a small fix or `v1.2.0` for new features. Each new tag must be higher than the last one, and MINOR and PATCH must stay below 100 (the Android version code is MAJOR×10000 + MINOR×100 + PATCH).
 
 Signing: every release must be signed with the same key, or Android won't install it over the old version.
 - Locally, `keystore.properties` points to the keystore. Neither file is in git.

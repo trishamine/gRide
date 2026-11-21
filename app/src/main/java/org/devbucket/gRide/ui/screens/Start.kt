@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -84,7 +87,7 @@ fun StartScreen(vm: AppViewModel) {
             ) {
                 AppTitleChip()
                 Spacer(Modifier.weight(1f))
-                RoundIconButton(Icons.Filled.MyLocation, "My location", onClick = {
+                RoundIconButton(Icons.Filled.MyLocation, stringResource(R.string.my_location), onClick = {
                     if (LocationProvider.hasPermission(context)) vm.locateMe()
                     else permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                 })
@@ -123,14 +126,14 @@ private fun HomeSheet(vm: AppViewModel, modifier: Modifier) {
     LazyColumn(modifier, contentPadding = PaddingValues(bottom = 16.dp)) {
         item {
             Text(
-                "Where to?",
+                stringResource(R.string.where_to),
                 Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.headlineLarge,
             )
         }
         item {
             SearchPill(
-                text = "Plan a trip",
+                text = stringResource(R.string.plan_a_trip),
                 icon = Icons.Filled.Search,
                 leading = Icons.AutoMirrored.Filled.ArrowForward,
                 onClick = vm::startTripPlanning,
@@ -149,19 +152,19 @@ private fun HomeSheet(vm: AppViewModel, modifier: Modifier) {
                 }
             }
         }
-        item { SectionTitle("Favourites & History", Modifier.padding(top = 8.dp)) }
+        item { SectionTitle(stringResource(R.string.favourites_history), Modifier.padding(top = 8.dp)) }
         if (trips.isEmpty()) {
-            item { EmptyState("Trips you plan appear here. Star them to keep them at the top.") }
+            item { EmptyState(stringResource(R.string.trips_empty)) }
         }
         items(trips, key = { it.key }) { entry ->
             TripRow(
                 entry,
                 onClick = { vm.planSaved(entry) },
                 menu = listOf(
-                    "Plan trip" to { vm.planSaved(entry) },
-                    "Return trip" to { vm.planSaved(entry, swap = true) },
-                    (if (entry.favorite) "Remove from favourites" else "Add to favourites") to { vm.store.toggleTripFavorite(entry) },
-                    "Delete" to { vm.store.removeTrip(entry) },
+                    stringResource(R.string.plan_trip) to { vm.planSaved(entry) },
+                    stringResource(R.string.return_trip) to { vm.planSaved(entry, swap = true) },
+                    (if (entry.favorite) stringResource(R.string.remove_favourite) else stringResource(R.string.add_favourite)) to { vm.store.toggleTripFavorite(entry) },
+                    stringResource(R.string.delete) to { vm.store.removeTrip(entry) },
                 ),
             )
             RowDivider()
@@ -206,7 +209,7 @@ fun TripRow(entry: TripEntry, onClick: () -> Unit, menu: List<Pair<String, () ->
             Text(entry.from.fullName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Text(entry.to.fullName, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
-        if (entry.favorite) Icon(Icons.Filled.Star, "Favourite", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+        if (entry.favorite) Icon(Icons.Filled.Star, stringResource(R.string.favourite), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
         MoreMenu(menu)
     }
 }

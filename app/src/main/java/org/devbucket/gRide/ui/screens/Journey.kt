@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -71,7 +74,7 @@ fun JourneyScreen(vm: AppViewModel, index: Int) {
         },
     ) {
         if (journey == null) {
-            EmptyState("This connection is no longer available.")
+            EmptyState(stringResource(R.string.connection_gone))
             return@MapSheetScaffold
         }
         JourneyHeader(journey)
@@ -88,9 +91,9 @@ fun JourneyScreen(vm: AppViewModel, index: Int) {
 private fun JourneyHeader(j: Journey) {
     Column(Modifier.padding(horizontal = 24.dp, vertical = 4.dp)) {
         Text(durationText(j.durationMinutes), style = MaterialTheme.typography.headlineMedium)
-        val changes = when (j.changes) { 0 -> "direct"; 1 -> "1 change"; else -> "${j.changes} changes" }
+        val changes = if (j.changes == 0) stringResource(R.string.direct) else pluralStringResource(R.plurals.changes, j.changes, j.changes)
         Text(
-            "${j.departure.hhmm()} – ${j.arrival.hhmm()} · $changes" + (j.departure?.let { " · " + relative(it).lowercase().replace("now", "leaves now") } ?: ""),
+            "${j.departure.hhmm()} – ${j.arrival.hhmm()} · $changes" + (j.departure?.let { " · " + relative(it) } ?: ""),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleMedium,
         )
@@ -133,7 +136,7 @@ private fun TransitLeg(leg: Leg) {
                     textDecoration = if (leg.cancelled) TextDecoration.LineThrough else null,
                 )
             }
-            if (leg.cancelled) Text("Cancelled", color = Late, fontWeight = FontWeight.Bold)
+            if (leg.cancelled) Text(stringResource(R.string.cancelled), color = Late, fontWeight = FontWeight.Bold)
             val stops = leg.intermediateStops
             Row(
                 Modifier
@@ -142,7 +145,7 @@ private fun TransitLeg(leg: Leg) {
                     .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                val stopText = when (stops.size) { 0 -> "No stop in between"; 1 -> "1 stop"; else -> "${stops.size} stops" }
+                val stopText = if (stops.isEmpty()) stringResource(R.string.no_stop_between) else pluralStringResource(R.plurals.stops, stops.size, stops.size)
                 Text(
                     "$stopText · ${durationText(leg.durationSeconds / 60L)}",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -180,7 +183,7 @@ private fun WalkLeg(leg: Leg) {
             Icon(Icons.AutoMirrored.Filled.DirectionsWalk, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Walk ${durationText((leg.durationSeconds / 60L).coerceAtLeast(1))} to ${leg.to.name}",
+                stringResource(R.string.walk_to, durationText((leg.durationSeconds / 60L).coerceAtLeast(1)), leg.to.name),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2, overflow = TextOverflow.Ellipsis,
             )

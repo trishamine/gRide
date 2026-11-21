@@ -1,5 +1,7 @@
 package org.devbucket.gRide.data
 
+import androidx.annotation.StringRes
+import org.devbucket.gRide.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Duration
@@ -9,15 +11,15 @@ import java.time.ZoneId
 val TransitZone: ZoneId = ZoneId.of("Europe/Berlin")
 
 /** Transport modes, derived from the MOTIS / GTFS mode of a trip. */
-enum class Mode(val label: String) {
-    TRAIN("Train"),
-    SUBURBAN("S-Bahn"),
-    TRAM("Tram"),
-    CITY_BUS("City bus"),
-    REGIONAL_BUS("Regional bus"),
-    ON_DEMAND("On-demand"),
-    WALK("Walk"),
-    OTHER("Other");
+enum class Mode(@StringRes val label: Int) {
+    TRAIN(R.string.mode_train),
+    SUBURBAN(R.string.mode_sbahn),
+    TRAM(R.string.mode_tram),
+    CITY_BUS(R.string.mode_city_bus),
+    REGIONAL_BUS(R.string.mode_regional_bus),
+    ON_DEMAND(R.string.mode_on_demand),
+    WALK(R.string.mode_walk),
+    OTHER(R.string.mode_other);
 
     companion object {
         /** In Augsburg, buses with 3-digit numbers are AVV regional buses, the others swa city buses. */
@@ -34,11 +36,11 @@ enum class Mode(val label: String) {
 }
 
 /** Groups used for filters in the UI and for excluding modes in trip requests. */
-enum class ModeGroup(val label: String, val motis: List<String>) {
-    TRAIN("Train", listOf("SUBWAY", "RAIL", "REGIONAL_RAIL", "REGIONAL_FAST_RAIL", "HIGHSPEED_RAIL", "LONG_DISTANCE", "NIGHT_RAIL", "SUBURBAN")),
-    TRAM("Tram", listOf("TRAM")),
-    BUS("Bus", listOf("BUS", "COACH")),
-    ON_DEMAND("On-demand", listOf("ODM"));
+enum class ModeGroup(@StringRes val label: Int, val motis: List<String>) {
+    TRAIN(R.string.mode_train, listOf("SUBWAY", "RAIL", "REGIONAL_RAIL", "REGIONAL_FAST_RAIL", "HIGHSPEED_RAIL", "LONG_DISTANCE", "NIGHT_RAIL", "SUBURBAN")),
+    TRAM(R.string.mode_tram, listOf("TRAM")),
+    BUS(R.string.group_bus, listOf("BUS", "COACH")),
+    ON_DEMAND(R.string.mode_on_demand, listOf("ODM"));
 
     companion object {
         fun of(mode: Mode): ModeGroup? = when (mode) {
@@ -91,9 +93,9 @@ data class Place(
             apiId = o.optString("apiId"),
         )
 
-        fun currentLocation(lat: Double, lon: Double) = Place(
+        fun currentLocation(lat: Double, lon: Double, name: String = "Current location") = Place(
             id = "coord:%.6f:%.6f".format(java.util.Locale.ROOT, lon, lat),
-            name = "Current location",
+            name = name,
             locality = "",
             type = LocationType.COORD,
             lat = lat,

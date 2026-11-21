@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,7 +75,7 @@ fun RunScreen(vm: AppViewModel, dep: Departure) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             BackButton(vm::back)
             Spacer(Modifier.width(16.dp))
-            Text("Departure details", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.departure_details), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
         }
         LazyColumn(
             Modifier.weight(1f),
@@ -114,7 +117,7 @@ private fun RunTimeline(run: VehicleRun) {
             StopLine(stops.first(), color, kind = Kind.END, passed = passed >= 0, isFirst = true)
             if (before.isNotEmpty()) {
                 ToggleLine(
-                    "${before.size} previous ${if (before.size == 1) "stop" else "stops"}",
+                    pluralStringResource(R.plurals.previous_stops, before.size, before.size),
                     showPrevious, color,
                 ) { showPrevious = !showPrevious }
                 if (showPrevious) before.forEachIndexed { i, s -> StopLine(s, color, Kind.MIDDLE, passed = passed >= i + 1) }
@@ -124,7 +127,7 @@ private fun RunTimeline(run: VehicleRun) {
         if (here < stops.lastIndex) {
             if (after.isNotEmpty()) {
                 ToggleLine(
-                    "${after.size} ${if (after.size == 1) "stop" else "stops"} until the last stop",
+                    pluralStringResource(R.plurals.stops_until_last, after.size, after.size),
                     showNext, color,
                 ) { showNext = !showNext }
                 if (showNext) after.forEachIndexed { i, s -> StopLine(s, color, Kind.MIDDLE, passed = passed >= here + 1 + i) }
@@ -186,7 +189,7 @@ private fun StopLine(
                 Text(platformLabel(s.platform), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (kind == Kind.HERE) {
-                Text("Your stop", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.your_stop), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             }
         }
     }

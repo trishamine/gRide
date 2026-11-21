@@ -1,5 +1,8 @@
 package org.devbucket.gRide.ui.screens
 
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import org.devbucket.gRide.R
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -84,7 +87,7 @@ fun StopBoardScreen(vm: AppViewModel, stop: Place) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             BackButton(vm::back)
             Spacer(Modifier.width(16.dp))
-            Text("Departures", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.tab_departures), style = MaterialTheme.typography.headlineSmall)
         }
         PullToRefreshBox(
             isRefreshing = false,
@@ -118,7 +121,7 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                     val sub = listOfNotNull(stop.locality.ifBlank { null }, distance?.let { distanceText(it) }).joinToString(" · ")
                     if (sub.isNotBlank()) Text(sub, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                if (onClose != null) RoundIconButton(Icons.Filled.Close, "Close", onClick = onClose, size = 48.dp)
+                if (onClose != null) RoundIconButton(Icons.Filled.Close, stringResource(R.string.close), onClick = onClose, size = 48.dp)
             }
         }
         val deps = (board as? Load.Ok)?.data.orEmpty()
@@ -138,19 +141,20 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                 contentPadding = PaddingValues(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                item { PrimaryAction("Start journey from here", { vm.planFrom(stop) }, icon = Icons.Filled.Directions) }
-                item { SecondaryAction("As destination", { vm.planFrom(stop, asDestination = true) }, icon = Icons.Filled.Flag) }
+                item { PrimaryAction(stringResource(R.string.start_journey_here), { vm.planFrom(stop) }, icon = Icons.Filled.Directions) }
+                item { SecondaryAction(stringResource(R.string.as_destination), { vm.planFrom(stop, asDestination = true) }, icon = Icons.Filled.Flag) }
                 item {
                     SecondaryAction(
-                        if (favorite) "Unfavourite" else "Favourite",
+                        stringResource(if (favorite) R.string.unfavourite else R.string.favourite),
                         { vm.store.toggleFavorite(stop) },
                         icon = if (favorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
                     )
                 }
-                if (showMapButton && stop.hasCoord) item { SecondaryAction("Map", { vm.openStopSheet(stop) }, icon = Icons.Filled.Map) }
+                if (showMapButton && stop.hasCoord) item { SecondaryAction(stringResource(R.string.map), { vm.openStopSheet(stop) }, icon = Icons.Filled.Map) }
                 item {
-                    SecondaryAction("Share", {
-                        val text = "Departures at ${stop.fullName}" + (deps.take(3).joinToString("") {
+                    val shareTitle = stringResource(R.string.share_title, stop.fullName)
+                    SecondaryAction(stringResource(R.string.share), {
+                        val text = shareTitle + (deps.take(3).joinToString("") {
                             "\n${it.time.hhmm()} ${it.line} → ${it.destination}"
                         })
                         context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), null))
@@ -170,7 +174,7 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                     FilterChip(
                         selected = vm.boardTime != null,
                         onClick = { showTime = true },
-                        label = { Text("Departure, " + (vm.boardTime?.hhmm() ?: "now")) },
+                        label = { Text(stringResource(R.string.departure_at, vm.boardTime?.hhmm() ?: stringResource(R.string.now_lower))) },
                         leadingIcon = { Icon(Icons.Filled.Schedule, null) },
                         colors = chipColors(),
                     )
@@ -179,7 +183,7 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                     FilterChip(
                         selected = g !in hidden,
                         onClick = { hidden = if (g in hidden) hidden - g else hidden + g },
-                        label = { Text(g.label) },
+                        label = { Text(stringResource(g.label)) },
                         colors = chipColors(),
                     )
                 }
@@ -190,7 +194,7 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
             is Load.Error -> item { ErrorState(board.message, onRetry = vm::refreshBoard) }
             is Load.Ok -> {
                 val visible = deps.filter { ModeGroup.of(it.mode) !in hidden }
-                if (visible.isEmpty()) item { EmptyState("No departures in the next hours.") }
+                if (visible.isEmpty()) item { EmptyState(stringResource(R.string.no_departures)) }
                 items(visible, key = { "${it.line}|${it.destination}|${it.planned}|${it.platform}" }) { d ->
                     DepartureRow(d, onClick = { vm.openRun(d) })
                     RowDivider()
@@ -198,7 +202,7 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                 vm.boardUpdated?.let { t ->
                     item {
                         Text(
-                            "Updated ${t.hhmm()}" + if (vm.store.settings.value.autoRefresh && vm.boardTime == null) " · refreshes every 30 s" else "",
+                            stringResource(R.string.updated_at, t.hhmm()) + if (vm.store.settings.value.autoRefresh && vm.boardTime == null) " " + stringResource(R.string.refreshes) else "",
                             Modifier.fillMaxWidth().padding(24.dp),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -245,7 +249,7 @@ fun DepartureRow(d: Departure, onClick: (() -> Unit)? = null) {
                 textDecoration = if (d.cancelled) TextDecoration.LineThrough else null,
             )
             Spacer(Modifier.width(6.dp))
-            if (d.cancelled) Text("Cancelled", color = Late, style = MaterialTheme.typography.titleSmall)
+            if (d.cancelled) Text(stringResource(R.string.cancelled), color = Late, style = MaterialTheme.typography.titleSmall)
             else DelayText(d.delayMinutes)
             Spacer(Modifier.weight(1f))
             Text(relative(d.time), style = MaterialTheme.typography.titleMedium)
@@ -254,11 +258,11 @@ fun DepartureRow(d: Departure, onClick: (() -> Unit)? = null) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             LineBadge(d.line, d.mode)
             Spacer(Modifier.width(10.dp))
-            Text(d.mode.label, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(d.mode.label), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
             Spacer(Modifier.weight(1f))
             Text(platformLabel(d.platform), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyLarge)
         }
         Spacer(Modifier.height(6.dp))
-        Text("Direction ${d.destination}", style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        Text(stringResource(R.string.direction, d.destination), style = MaterialTheme.typography.bodyLarge, maxLines = 2, overflow = TextOverflow.Ellipsis)
     }
 }

@@ -1,0 +1,219 @@
+<resources>
+    <!-- navigation -->
+    <string name="tab_start">Старт</string>
+    <string name="tab_departures">Отправления</string>
+    <string name="tab_settings">Настройки</string>
+    <string name="back">Назад</string>
+    <string name="next">Далее</string>
+    <string name="close">Закрыть</string>
+    <string name="more">Ещё</string>
+    <string name="done">Готово</string>
+    <string name="cancel">Отмена</string>
+    <string name="refresh">Обновить</string>
+    <string name="try_again">Повторить</string>
+    <string name="clear">Очистить</string>
+    <string name="delete">Удалить</string>
+
+    <!-- transport modes -->
+    <string name="mode_train">Поезд</string>
+    <string name="mode_sbahn">Электричка</string>
+    <string name="mode_tram">Трамвай</string>
+    <string name="mode_city_bus">Городской автобус</string>
+    <string name="mode_regional_bus">Пригородный автобус</string>
+    <string name="mode_on_demand">По вызову</string>
+    <string name="mode_walk">Пешком</string>
+    <string name="mode_other">Другое</string>
+    <string name="group_bus">Автобус</string>
+
+    <!-- time and distance -->
+    <string name="now">Сейчас</string>
+    <string name="now_lower">сейчас</string>
+    <string name="in_minutes">Через %d мин</string>
+    <string name="duration_min">%d мин</string>
+    <string name="duration_h_min">%1$d ч %2$d мин</string>
+    <string name="unit_min">мин</string>
+    <string name="unit_h">ч</string>
+    <string name="distance_m">%d м от вас</string>
+    <string name="distance_km">%.1f км от вас</string>
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="when_title">Когда?</string>
+    <string name="platform">Платформа %s</string>
+
+    <!-- start -->
+    <string name="my_location">Моё местоположение</string>
+    <string name="where_to">Куда?</string>
+    <string name="plan_a_trip">Спланировать поездку</string>
+    <string name="favourites_history">Избранное и история</string>
+    <string name="trips_empty">Здесь появятся запланированные поездки. Отметьте их звёздочкой, чтобы они оставались наверху.</string>
+    <string name="plan_trip">Спланировать</string>
+    <string name="return_trip">Обратная поездка</string>
+    <string name="favourite">В избранное</string>
+    <string name="unfavourite">Убрать из избранного</string>
+    <string name="add_favourite">Добавить в избранное</string>
+    <string name="remove_favourite">Удалить из избранного</string>
+
+    <!-- departures -->
+    <string name="search_stop">Найти остановку</string>
+    <string name="stops_nearby">Рядом</string>
+    <string name="departures_empty">Найдите остановку, чтобы увидеть отправления. Здесь появятся избранные и недавние остановки.</string>
+    <string name="show_on_map">Показать на карте</string>
+    <string name="recent">Недавние</string>
+    <string name="remove_history">Удалить из истории</string>
+    <string name="location_needed">Разрешите доступ к геолокации, чтобы видеть остановки рядом.</string>
+    <string name="allow_location">Разрешить геолокацию</string>
+    <string name="no_stops_nearby">В радиусе 1,2 км нет остановок.</string>
+    <string name="start_journey_here">Поехать отсюда</string>
+    <string name="as_destination">Как пункт назначения</string>
+    <string name="map">Карта</string>
+    <string name="share">Поделиться</string>
+    <string name="share_title">Отправления от остановки %s</string>
+    <string name="departure_at">Отправление, %s</string>
+    <string name="no_departures">В ближайшие часы отправлений нет.</string>
+    <string name="updated_at">Обновлено в %s</string>
+    <string name="refreshes">· обновляется каждую минуту</string>
+    <string name="direction">Направление: %s</string>
+    <string name="cancelled">Отменён</string>
+
+    <!-- departure details -->
+    <string name="departure_details">Детали отправления</string>
+    <string name="your_stop">Ваша остановка</string>
+    <plurals name="previous_stops">
+        <item quantity="one">%d предыдущая остановка</item>
+        <item quantity="few">%d предыдущие остановки</item>
+        <item quantity="many">%d предыдущих остановок</item>
+        <item quantity="other">%d предыдущих остановки</item>
+    </plurals>
+    <plurals name="stops_until_last">
+        <item quantity="one">%d остановка до конечной</item>
+        <item quantity="few">%d остановки до конечной</item>
+        <item quantity="many">%d остановок до конечной</item>
+        <item quantity="other">%d остановки до конечной</item>
+    </plurals>
+
+    <!-- search -->
+    <string name="where_start">Откуда?</string>
+    <string name="nearest_stop">Ближайшая остановка</string>
+    <string name="current_location">Текущее местоположение</string>
+    <string name="use_position">Использовать ваше местоположение</string>
+    <string name="favourite_stops">Избранные остановки</string>
+    <string name="nothing_found">По запросу «%s» ничего не найдено.</string>
+
+    <!-- trip -->
+    <string name="public_transport">Общественный транспорт</string>
+    <string name="leave_now">Отправиться сейчас</string>
+    <string name="depart">Отправление</string>
+    <string name="arrive">Прибытие</string>
+    <string name="choose_start_hint">Выберите, откуда вы едете.</string>
+    <string name="choose_destination_hint">Выберите пункт назначения.</string>
+    <string name="no_connections">Маршруты не найдены. Попробуйте другое время или разрешите больше видов транспорта.</string>
+    <string name="earlier">Раньше</string>
+    <string name="later">Позже</string>
+    <string name="choose_start">Выберите начало</string>
+    <string name="choose_destination">Выберите пункт назначения</string>
+    <string name="swap">Поменять местами</string>
+    <string name="departs_from">Отправление в %1$s от остановки %2$s</string>
+    <string name="walk_whole_way">Весь путь пешком</string>
+
+    <!-- journey -->
+    <string name="connection_gone">Этот маршрут больше недоступен.</string>
+    <string name="direct">без пересадок</string>
+    <plurals name="changes">
+        <item quantity="one">%d пересадка</item>
+        <item quantity="few">%d пересадки</item>
+        <item quantity="many">%d пересадок</item>
+        <item quantity="other">%d пересадки</item>
+    </plurals>
+    <string name="no_stop_between">Без промежуточных остановок</string>
+    <plurals name="stops">
+        <item quantity="one">%d остановка</item>
+        <item quantity="few">%d остановки</item>
+        <item quantity="many">%d остановок</item>
+        <item quantity="other">%d остановки</item>
+    </plurals>
+    <string name="walk_to">%1$s пешком до %2$s</string>
+
+    <!-- settings -->
+    <string name="language">Язык</string>
+    <string name="language_system">Язык системы</string>
+    <string name="design">Оформление</string>
+    <string name="design_desc">Выберите, как выглядит gRide.</string>
+    <string name="style_expressive">Expressive</string>
+    <string name="style_glass">Liquid Glass</string>
+    <string name="expressive_desc">Material 3 Expressive: смелые формы, пружинящие анимации и цветные поверхности.</string>
+    <string name="glass_desc">Liquid Glass: парящие стеклянные панели с преломлением поверх карты. Нажмите на стеклянный элемент — он увеличится и засветится.</string>
+    <string name="theme">Тема</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+    <string name="dynamic_colours">Динамические цвета</string>
+    <string name="dynamic_colours_desc">Использовать цвета обоев</string>
+    <string name="auto_refresh">Автообновление</string>
+    <string name="auto_refresh_desc">Обновлять отправления каждую минуту</string>
+    <string name="updates">Обновления</string>
+    <string name="version">gRide %s</string>
+    <string name="checking">Проверка…</string>
+    <string name="latest_version">У вас последняя версия.</string>
+    <string name="version_available">Доступна версия %s.</string>
+    <string name="downloading">Загрузка… %d %%</string>
+    <string name="allow_install_finish">Разрешите gRide устанавливать обновления, чтобы завершить.</string>
+    <string name="update_now">Обновить сейчас</string>
+    <string name="check_updates">Проверить обновления</string>
+    <string name="history">История</string>
+    <string name="history_desc">Удаляет недавние остановки и поездки. Избранное сохраняется.</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="about">О приложении</string>
+    <string name="about_text">Расписания и данные в реальном времени: Transitous (transitous.org) на основе открытых данных DELFI. Только некоммерческое использование.\nКарта: © участники OpenStreetMap.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
+    <plurals name="taps_left">
+        <item quantity="one">Ещё %d нажатие…</item>
+        <item quantity="few">Ещё %d нажатия…</item>
+        <item quantity="many">Ещё %d нажатий…</item>
+        <item quantity="other">Ещё %d нажатия…</item>
+    </plurals>
+
+    <!-- secret settings -->
+    <string name="secret_settings">Секретные настройки</string>
+    <string name="setup">Настройка</string>
+    <string name="replay_setup_desc">Ещё раз показать приветственную анимацию и настройку. Избранное и история сохранятся.</string>
+    <string name="replay_setup">Повторить настройку</string>
+    <string name="hide_menu">Скрыть это меню</string>
+    <string name="hide_menu_desc">Убирает кнопку из настроек. Нажмите на версию 5 раз, чтобы вернуть её.</string>
+    <string name="hide_secret">Скрыть секретные настройки</string>
+
+    <!-- setup -->
+    <string name="choose_language">Выберите язык</string>
+    <string name="change_later">Это можно изменить позже в настройках.</string>
+    <string name="lets_ride">Поехали</string>
+    <string name="intro_tagline">Автобусы и трамваи Аугсбурга.\nВ реальном времени, на карте, в вашем стиле.</string>
+    <string name="get_started">Начать</string>
+    <string name="pick_style">Выберите стиль</string>
+    <string name="expressive_short">Material 3 Expressive: смелые формы и пружинящие анимации</string>
+    <string name="glass_short">Парящее стекло с преломлением поверх карты</string>
+    <string name="glass">Стекло</string>
+    <string name="light_or_dark">Светлая или тёмная?</string>
+    <string name="light_or_dark_desc">Как на телефоне, или выберите сами.</string>
+    <string name="stops_near_you">Остановки рядом</string>
+    <string name="location_desc">gRide использует ваше местоположение, чтобы показывать остановки рядом и начинать поездки там, где вы находитесь. Оно покидает телефон только как начальная точка поиска.</string>
+    <string name="location_on">Геолокация включена. Всё готово!</string>
+
+    <!-- updates -->
+    <string name="update_title">Вышла версия gRide %s</string>
+    <string name="you_have_version">У вас версия %s.</string>
+    <string name="install_permission_hint">Android просит разрешить gRide устанавливать приложения. Включите это и вернитесь — обновление установится сразу.</string>
+    <string name="install">Установить</string>
+    <string name="update">Обновить</string>
+    <string name="skip_version">Пропустить версию</string>
+
+    <!-- errors -->
+    <string name="err_departures">Не удалось загрузить отправления.</string>
+    <string name="err_location">Местоположение недоступно. Включите геолокацию и попробуйте снова.</string>
+    <string name="err_nearby">Не удалось загрузить остановки рядом.</string>
+    <string name="err_search">Поиск не удался.</string>
+    <string name="err_no_stop_nearby">Рядом нет остановок.</string>
+    <string name="err_connections">Не удалось найти маршруты.</string>
+    <string name="err_run">Не удалось загрузить это отправление.</string>
+    <string name="err_update_check">Не удалось проверить обновления.</string>
+    <string name="err_download">Загрузка не удалась.</string>
+    <string name="err_rate_limited">Слишком много запросов. gRide делает паузу до %s.</string>
+    <string name="err_offline">Нет соединения с сервером. Проверьте подключение к интернету.</string>
+</resources>
