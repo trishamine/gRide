@@ -1,0 +1,49 @@
+# Builds a signed gRide APK and publishes it as a GitHub release.
+# Start it by pushing a version tag, e.g.:  git tag v1.2.0 && git push origin v1.2.0
+# The installed apps find the new release and offer the update.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # needed to create the release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest   # standard runner: free for public repositories
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - uses: android-actions/setup-android@v3
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Restore signing key
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/gride-release.jks"
+
+      - name: Build release APK
+        env:
+          GRIDE_KEYSTORE: ${{ runner.temp }}/gride-release.jks
+          GRIDE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          GRIDE_KEY_ALIAS: gride
+          GRIDE_KEY_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease -PappVersion="$VERSION"
+          cp app/build/outputs/apk/release/app-release.apk "gRide-$VERSION.apk"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: gRide ${{ env.VERSION }}
+          files: gRide-*.apk
+          generate_release_notes: true
