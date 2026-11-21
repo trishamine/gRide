@@ -1,6 +1,6 @@
 # gRide
 
-EVERYTHING HERE IS GENERATED USING CLAUDE (mainly Opus 5.5)
+## EVERYTHING HERE IS GENERATED USING CLAUDE (mainly Opus 5.5)
 
 An Android app for public transport in Augsburg / AVV: live departures, trip planning, a map with clickable stops, and traffic news.
 It ships two UI styles you can switch between in **Settings → Design**:
