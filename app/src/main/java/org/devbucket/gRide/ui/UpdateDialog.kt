@@ -1,28 +1,37 @@
 package org.devbucket.gRide.ui
 
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
-import org.devbucket.gRide.R
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SystemUpdate
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.outlined.MobileFriendly
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.devbucket.gRide.ui.components.PrimaryAction
+import org.devbucket.gRide.R
+import org.devbucket.gRide.ui.components.rememberPressMorph
 
-/** "A new version is available" with release notes, download progress and install. */
+/** Compact "gRide x.y.z is here" dialog: icon, title, and Update / Later side by side. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateDialog(vm: AppViewModel) {
     val state = vm.update
@@ -34,47 +43,82 @@ fun UpdateDialog(vm: AppViewModel) {
     }
     val downloading = state is UpdateState.Downloading
 
-    AlertDialog(
-        onDismissRequest = { if (!downloading) vm.dismissUpdate() },
-        icon = { Icon(Icons.Filled.SystemUpdate, null) },
-        title = { Text(if (release != null) stringResource(R.string.update_title, release.version) else stringResource(R.string.update)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    stringResource(R.string.you_have_version, vm.installedVersion),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    BasicAlertDialog(onDismissRequest = { if (!downloading) vm.dismissUpdate() }) {
+        Surface(
+            shape = RoundedCornerShape(32.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = 6.dp,
+        ) {
+            Column(
+                Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Icon(
+                    Icons.Outlined.MobileFriendly, null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(28.dp),
                 )
-                if (!release?.notes.isNullOrBlank()) {
-                    Text(
-                        release!!.notes.replace("\r", ""),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.heightIn(max = 240.dp).verticalScroll(rememberScrollState()),
-                    )
-                }
+                Text(
+                    if (release != null) stringResource(R.string.update_title, release.version) else stringResource(R.string.update),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                )
                 when (state) {
                     is UpdateState.Downloading -> {
-                        LinearProgressIndicator(progress = { state.progress }, modifier = Modifier.fillMaxWidth())
-                        Text(stringResource(R.string.downloading, (state.progress * 100).toInt()), style = MaterialTheme.typography.labelLarge)
+                        LinearProgressIndicator(
+                            progress = { state.progress },
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        )
+                        Text(
+                            stringResource(R.string.downloading, (state.progress * 100).toInt()),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                     is UpdateState.NeedsPermission -> Text(
                         stringResource(R.string.install_permission_hint),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                    is UpdateState.Error -> Text(state.message, color = MaterialTheme.colorScheme.error)
+                    is UpdateState.Error -> Text(
+                        state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                    )
                     else -> Unit
                 }
+                if (!downloading) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        if (release != null) {
+                            val source = remember { MutableInteractionSource() }
+                            val p = rememberPressMorph(source)
+                            Button(
+                                onClick = vm::startUpdate,
+                                modifier = Modifier.weight(1f).height(56.dp),
+                                shape = RoundedCornerShape(28.dp - 16.dp * p),
+                                interactionSource = source,
+                            ) {
+                                Text(
+                                    stringResource(if (state is UpdateState.NeedsPermission) R.string.install else R.string.update),
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                            }
+                        }
+                        val source = remember { MutableInteractionSource() }
+                        val p = rememberPressMorph(source)
+                        FilledTonalButton(
+                            onClick = vm::dismissUpdate,
+                            modifier = Modifier.weight(1f).height(56.dp),
+                            shape = RoundedCornerShape(28.dp - 16.dp * p),
+                            interactionSource = source,
+                        ) {
+                            Text(stringResource(R.string.later), style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
+                }
             }
-        },
-        confirmButton = {
-            if (!downloading && release != null) {
-                PrimaryAction(stringResource(if (state is UpdateState.NeedsPermission) R.string.install else R.string.update), vm::startUpdate)
-            }
-        },
-        dismissButton = {
-            if (!downloading) {
-                if (state is UpdateState.Available) TextButton(onClick = vm::skipUpdate) { Text(stringResource(R.string.skip_version)) }
-                TextButton(onClick = vm::dismissUpdate) { Text(stringResource(R.string.later)) }
-            }
-        },
-    )
+        }
+    }
 }

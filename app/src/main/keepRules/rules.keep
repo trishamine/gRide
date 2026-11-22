@@ -10,3 +10,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# Keep classes in their packages. Without this, R8 moved Kotlin library classes into the root package,
+# away from package-private parents (kotlin.collections), and the release app crashed at startup with
+# IllegalAccessError in androidx.startup.InitializationProvider.
+-keeppackagenames
