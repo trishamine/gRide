@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -76,6 +78,13 @@ fun RunScreen(vm: AppViewModel, dep: Departure) {
             BackButton(vm::back)
             Spacer(Modifier.width(16.dp))
             Text(stringResource(R.string.departure_details), style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            val followedLines by vm.store.followedLines.collectAsStateWithLifecycle()
+            val following = dep.line in followedLines
+            RoundIconButton(
+                if (following) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
+                stringResource(if (following) R.string.unfollow_line else R.string.follow_line, dep.line),
+                onClick = { vm.store.toggleLine(dep.line) },
+            )
         }
         LazyColumn(
             Modifier.weight(1f),

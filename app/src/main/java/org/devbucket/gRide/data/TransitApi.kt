@@ -53,7 +53,7 @@ object TransitApi {
                     blockedUntil = Instant.now().plusSeconds(wait)
                     throw RateLimitedException(blockedUntil)
                 }
-                if (code !in 200..299) throw IOException("Server error $code")
+                if (code !in 200..299) throw HttpStatusException(code)
                 val body = conn.inputStream.bufferedReader().use { it.readText() }
                 synchronized(cache) { cache[url] = System.currentTimeMillis() to body }
                 body

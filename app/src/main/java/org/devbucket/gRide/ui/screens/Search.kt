@@ -94,6 +94,7 @@ fun SearchScreen(vm: AppViewModel, target: SearchTarget) {
                     SearchTarget.FROM -> stringResource(R.string.where_start)
                     SearchTarget.TO -> stringResource(R.string.where_to)
                     SearchTarget.STOP -> stringResource(R.string.search_stop)
+                    SearchTarget.FOLLOW -> stringResource(R.string.stop_to_follow)
                 },
                 modifier = Modifier.weight(1f).focusRequester(focus),
             )

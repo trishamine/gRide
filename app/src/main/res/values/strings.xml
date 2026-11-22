@@ -157,7 +157,7 @@
     <string name="history_desc">Removes recent stops and trips. Favourites are kept.</string>
     <string name="clear_history">Clear history</string>
     <string name="about">About</string>
-    <string name="about_text">Timetables and realtime data: Transitous (transitous.org), based on DELFI open data. Non-commercial use.\nMap: © OpenStreetMap contributors.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
+    <string name="about_text">Timetables, realtime data and traffic news: Bahnland Bayern (DEFAS). Fallback: Transitous (transitous.org), based on DELFI open data, non-commercial use.\nMap: © OpenStreetMap contributors.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
     <plurals name="taps_left">
         <item quantity="one">%d more tap…</item>
         <item quantity="other">%d more taps…</item>
@@ -176,7 +176,7 @@
     <string name="choose_language">Choose your language</string>
     <string name="change_later">You can change it later in Settings.</string>
     <string name="lets_ride">Let\'s ride</string>
-    <string name="intro_tagline">Buses and trams in Augsburg.\nLive, on a map, in your style.</string>
+    <string name="intro_tagline">Buses, trams and trains across Germany.\nPrioritized for Augsburg.</string>
     <string name="get_started">Get started</string>
     <string name="pick_style">Pick your style</string>
     <string name="expressive_short">Material 3 Expressive: bold shapes and springy motion</string>
@@ -208,4 +208,47 @@
     <string name="err_download">The download failed.</string>
     <string name="err_rate_limited">Too many requests. gRide pauses until %s.</string>
     <string name="err_offline">No connection to the server. Check your internet connection.</string>
+
+    <!-- traffic news, follow, data source -->
+    <string name="tab_news">Traffic news</string>
+    <string name="you_follow">You follow</string>
+    <string name="edit">Edit</string>
+    <string name="follow_hint">Choose the lines and stops you use. Their construction work, diversions and closures show up here.</string>
+    <string name="choose_lines_stops">Choose lines &amp; stops</string>
+    <string name="your_news">Your news</string>
+    <string name="no_followed_news">No current news for the lines and stops you follow.</string>
+    <string name="city_news">Augsburg city buses &amp; trams</string>
+    <string name="city_news_sub">All current news from swa (Stadtwerke Augsburg)</string>
+    <string name="no_city_news">No current news for Augsburg city transport.</string>
+    <string name="server_error">Server Error %d</string>
+    <string name="news_need_bahnland">Traffic news need the Bahnland Bayern API, but Transitous is forced in the secret settings.</string>
+    <string name="valid_from_until">From %1$s until %2$s</string>
+    <string name="valid_from">From %s</string>
+    <string name="valid_until">Until %s</string>
+    <string name="follow">Follow</string>
+    <string name="lines">Lines</string>
+    <string name="line_number_hint">Line number, e.g. 3 or 32</string>
+    <string name="add_line">Add line</string>
+    <string name="following">Following</string>
+    <string name="lines_with_news">Lines with current news</string>
+    <string name="stops_title">Stops</string>
+    <string name="add_stop">Add stop</string>
+    <string name="stop_following">Stop following</string>
+    <string name="follow_news">Follow news</string>
+    <string name="following_news">Following news</string>
+    <string name="follow_line">Follow news for line %s</string>
+    <string name="unfollow_line">Stop following line %s</string>
+    <string name="you_follow_line">You follow news for line %s</string>
+    <string name="stop_to_follow">Stop to follow</string>
+    <string name="data_source">Data source</string>
+    <string name="data_source_desc">Automatic uses Bahnland Bayern and switches to Transitous when it doesn\'t answer.</string>
+    <string name="api_auto">Automatic</string>
+    <string name="api_bahnland">Bahnland Bayern</string>
+    <string name="api_transitous">Transitous</string>
+    <string name="bahnland_ok">Bahnland Bayern is available.</string>
+    <string name="bahnland_down">Bahnland Bayern is not available right now, so Transitous is used.</string>
+    <string name="bahnland_unknown">Checking Bahnland Bayern…</string>
+    <string name="test_update">Test update</string>
+    <string name="test_update_desc">Shows the update dialog for the latest release, downloads it and installs it again.</string>
+    <string name="test_update_button">Show update dialog</string>
 </resources>

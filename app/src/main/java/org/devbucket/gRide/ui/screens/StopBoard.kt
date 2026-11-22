@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Share
@@ -148,6 +150,15 @@ fun StopBoard(vm: AppViewModel, stop: Place, onClose: (() -> Unit)?, showMapButt
                         stringResource(if (favorite) R.string.unfavourite else R.string.favourite),
                         { vm.store.toggleFavorite(stop) },
                         icon = if (favorite) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                    )
+                }
+                item {
+                    val followed by vm.store.followedStops.collectAsStateWithLifecycle()
+                    val isFollowed = followed.any { it.id == stop.id }
+                    SecondaryAction(
+                        stringResource(if (isFollowed) R.string.following_news else R.string.follow_news),
+                        { vm.store.toggleFollowStop(stop) },
+                        icon = if (isFollowed) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
                     )
                 }
                 if (showMapButton && stop.hasCoord) item { SecondaryAction(stringResource(R.string.map), { vm.openStopSheet(stop) }, icon = Icons.Filled.Map) }

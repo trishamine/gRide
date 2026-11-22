@@ -6,7 +6,7 @@ plugins {
 }
 
 // App version: from the release tag on GitHub (-PappVersion=1.2.0), otherwise the default below.
-val appVersion = (findProperty("appVersion") as String?)?.removePrefix("v") ?: "1.2.1"
+val appVersion = (findProperty("appVersion") as String?)?.removePrefix("v") ?: "1.2.2"
 val appVersionCode = appVersion.split('.').map { it.filter(Char::isDigit).toIntOrNull() ?: 0 }
     .let { p -> p.getOrElse(0) { 0 } * 10000 + p.getOrElse(1) { 0 } * 100 + p.getOrElse(2) { 0 } }
 

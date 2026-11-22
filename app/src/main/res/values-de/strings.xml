@@ -155,7 +155,7 @@
     <string name="history_desc">Löscht letzte Haltestellen und Fahrten. Favoriten bleiben erhalten.</string>
     <string name="clear_history">Verlauf löschen</string>
     <string name="about">Über gRide</string>
-    <string name="about_text">Fahrpläne und Echtzeitdaten: Transitous (transitous.org), auf Basis der DELFI-Open-Data. Nur nicht-kommerzielle Nutzung.\nKarte: © OpenStreetMap-Mitwirkende.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
+    <string name="about_text">Fahrpläne, Echtzeitdaten und Verkehrsmeldungen: Bahnland Bayern (DEFAS). Ersatz: Transitous (transitous.org), auf Basis der DELFI-Open-Data, nur nicht-kommerziell.\nKarte: © OpenStreetMap-Mitwirkende.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
     <plurals name="taps_left">
         <item quantity="one">Noch %d Tipp…</item>
         <item quantity="other">Noch %d Tipps…</item>
@@ -174,7 +174,7 @@
     <string name="choose_language">Wähle deine Sprache</string>
     <string name="change_later">Du kannst das später in den Einstellungen ändern.</string>
     <string name="lets_ride">Los geht\'s</string>
-    <string name="intro_tagline">Busse und Trams in Augsburg.\nLive, auf der Karte, in deinem Stil.</string>
+    <string name="intro_tagline">Busse, Trams und Züge in ganz Deutschland.\nMit Vorrang für Augsburg.</string>
     <string name="get_started">Loslegen</string>
     <string name="pick_style">Wähle deinen Stil</string>
     <string name="expressive_short">Material 3 Expressive: kräftige Formen und federnde Bewegungen</string>
@@ -206,4 +206,47 @@
     <string name="err_download">Der Download ist fehlgeschlagen.</string>
     <string name="err_rate_limited">Zu viele Anfragen. gRide pausiert bis %s.</string>
     <string name="err_offline">Keine Verbindung zum Server. Prüfe deine Internetverbindung.</string>
+
+    <!-- traffic news, follow, data source -->
+    <string name="tab_news">Verkehrsmeldungen</string>
+    <string name="you_follow">Du folgst</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="follow_hint">Wähle die Linien und Haltestellen, die du nutzt. Ihre Bauarbeiten, Umleitungen und Sperrungen erscheinen hier.</string>
+    <string name="choose_lines_stops">Linien &amp; Haltestellen wählen</string>
+    <string name="your_news">Deine Meldungen</string>
+    <string name="no_followed_news">Keine aktuellen Meldungen für deine Linien und Haltestellen.</string>
+    <string name="city_news">Augsburger Stadtbusse &amp; Trams</string>
+    <string name="city_news_sub">Alle aktuellen Meldungen der swa (Stadtwerke Augsburg)</string>
+    <string name="no_city_news">Keine aktuellen Meldungen für den Augsburger Stadtverkehr.</string>
+    <string name="server_error">Serverfehler %d</string>
+    <string name="news_need_bahnland">Verkehrsmeldungen brauchen die Bahnland-Bayern-API, aber in den geheimen Einstellungen ist Transitous erzwungen.</string>
+    <string name="valid_from_until">Vom %1$s bis %2$s</string>
+    <string name="valid_from">Ab %s</string>
+    <string name="valid_until">Bis %s</string>
+    <string name="follow">Folgen</string>
+    <string name="lines">Linien</string>
+    <string name="line_number_hint">Liniennummer, z. B. 3 oder 32</string>
+    <string name="add_line">Linie hinzufügen</string>
+    <string name="following">Gefolgt</string>
+    <string name="lines_with_news">Linien mit aktuellen Meldungen</string>
+    <string name="stops_title">Haltestellen</string>
+    <string name="add_stop">Haltestelle hinzufügen</string>
+    <string name="stop_following">Nicht mehr folgen</string>
+    <string name="follow_news">Meldungen folgen</string>
+    <string name="following_news">Meldungen gefolgt</string>
+    <string name="follow_line">Meldungen für Linie %s folgen</string>
+    <string name="unfollow_line">Linie %s nicht mehr folgen</string>
+    <string name="you_follow_line">Du folgst den Meldungen für Linie %s</string>
+    <string name="stop_to_follow">Haltestelle zum Folgen</string>
+    <string name="data_source">Datenquelle</string>
+    <string name="data_source_desc">Automatisch nutzt Bahnland Bayern und wechselt zu Transitous, wenn es nicht antwortet.</string>
+    <string name="api_auto">Automatisch</string>
+    <string name="api_bahnland">Bahnland Bayern</string>
+    <string name="api_transitous">Transitous</string>
+    <string name="bahnland_ok">Bahnland Bayern ist erreichbar.</string>
+    <string name="bahnland_down">Bahnland Bayern ist gerade nicht erreichbar, daher wird Transitous genutzt.</string>
+    <string name="bahnland_unknown">Bahnland Bayern wird geprüft…</string>
+    <string name="test_update">Update testen</string>
+    <string name="test_update_desc">Zeigt den Update-Dialog für die neueste Version, lädt sie herunter und installiert sie erneut.</string>
+    <string name="test_update_button">Update-Dialog zeigen</string>
 </resources>

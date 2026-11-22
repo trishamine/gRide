@@ -20,6 +20,8 @@ data class Settings(
     val setupDone: Boolean = false,
     /** Secret settings are shown after tapping the version 5 times. */
     val secretUnlocked: Boolean = false,
+    /** Secret setting: automatic API choice, or force Bahnland Bayern / Transitous. */
+    val apiChoice: ApiChoice = ApiChoice.AUTO,
 )
 
 /** Favourites, history and settings, persisted in SharedPreferences as JSON. */
@@ -38,6 +40,28 @@ class Store(context: Context) {
     private val _trips = MutableStateFlow(loadTrips())
     val trips: StateFlow<List<TripEntry>> = _trips.asStateFlow()
 
+    /** Lines (by number) and stops whose traffic news the user follows. Saved on the device. */
+    private val _followedLines = MutableStateFlow(prefs.getStringSet("followedLines", emptySet())!!.toSet())
+    val followedLines: StateFlow<Set<String>> = _followedLines.asStateFlow()
+
+    private val _followedStops = MutableStateFlow(loadPlaces("followedStops"))
+    val followedStops: StateFlow<List<Place>> = _followedStops.asStateFlow()
+
+    fun toggleLine(number: String) {
+        val n = number.trim()
+        if (n.isEmpty()) return
+        _followedLines.value = if (n in _followedLines.value) _followedLines.value - n else _followedLines.value + n
+        prefs.edit().putStringSet("followedLines", _followedLines.value).apply()
+    }
+
+    fun isFollowing(place: Place) = _followedStops.value.any { it.id == place.id }
+
+    fun toggleFollowStop(place: Place) {
+        val list = _followedStops.value
+        _followedStops.value = if (list.any { it.id == place.id }) list.filterNot { it.id == place.id } else list + place.copy(distanceMeters = null)
+        savePlaces("followedStops", _followedStops.value)
+    }
+
     // ------------------------------------------------------------ settings
     fun updateSettings(transform: (Settings) -> Settings) {
         val s = transform(_settings.value)
@@ -49,6 +73,7 @@ class Store(context: Context) {
             .putBoolean("autoRefresh", s.autoRefresh)
             .putBoolean("setupDone", s.setupDone)
             .putBoolean("secretUnlocked", s.secretUnlocked)
+            .putString("apiChoice", s.apiChoice.name)
             .apply()
     }
 
@@ -59,6 +84,7 @@ class Store(context: Context) {
         autoRefresh = prefs.getBoolean("autoRefresh", true),
         setupDone = prefs.getBoolean("setupDone", false),
         secretUnlocked = prefs.getBoolean("secretUnlocked", false),
+        apiChoice = enumOr(prefs.getString("apiChoice", null), ApiChoice.AUTO),
     )
 
     // --------------------------------------------------------------- stops

@@ -14,7 +14,11 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.devbucket.gRide.data.Departure
 import org.devbucket.gRide.data.VehicleRun
-import org.devbucket.gRide.data.TransitApi
+import org.devbucket.gRide.data.ApiChoice
+import org.devbucket.gRide.data.DataSource
+import org.devbucket.gRide.data.Disruption
+import org.devbucket.gRide.data.HttpStatusException
+import org.devbucket.gRide.data.NewsUnavailableException
 import org.devbucket.gRide.data.RateLimitedException
 import org.devbucket.gRide.R
 import org.devbucket.gRide.data.AppRelease
@@ -40,12 +44,13 @@ sealed interface Load<out T> {
     data class Error(val message: String) : Load<Nothing>
 }
 
-enum class Tab { START, DEPARTURES, SETTINGS }
+enum class Tab { START, DEPARTURES, NEWS, SETTINGS }
 
 enum class SearchTarget(val stopsOnly: Boolean, val title: String) {
     FROM(false, "Start"),
     TO(false, "Destination"),
     STOP(true, "Stop"),
+    FOLLOW(true, "Stop to follow"),
 }
 
 sealed interface Overlay {
@@ -56,6 +61,7 @@ sealed interface Overlay {
     data class JourneyDetail(val index: Int) : Overlay
     data class StopBoard(val stop: Place) : Overlay
     data object Secret : Overlay
+    data object Follow : Overlay
 }
 
 enum class TimeMode(@androidx.annotation.StringRes val label: Int) {
@@ -101,6 +107,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun selectTab(t: Tab) {
         overlays.clear()
         tab = t
+        if (t == Tab.NEWS && news !is Load.Ok) loadNews()
         if (t == Tab.START) refreshBoardLoop()
     }
 
@@ -177,7 +184,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }.filter { it !in loadedCells }.take(6)
             for ((y, x) in cells) {
                 val found = try {
-                    TransitApi.stopsInBox(y * CELL_LAT, x * CELL_LON, (y + 1) * CELL_LAT, (x + 1) * CELL_LON)
+                    DataSource.stopsInBox(y * CELL_LAT, x * CELL_LON, (y + 1) * CELL_LAT, (x + 1) * CELL_LON)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -255,8 +262,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if (showLoading && board !is Load.Ok) board = Load.Loading
             while (isActive) {
                 try {
-                    val stop = resolved(place)
-                    val list = TransitApi.departures(stop, 40, boardTime)
+                    val list = DataSource.departures(place, 40, boardTime)
                     board = Load.Ok(list)
                     boardUpdated = ZonedDateTime.now(TransitZone)
                 } catch (e: CancellationException) {
@@ -268,18 +274,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 delay(REFRESH_MS)
             }
         }
-    }
-
-    private val resolvedStops = HashMap<String, Place>()
-
-    /** Older favourites lack a platform id; look it up once and remember it. */
-    private suspend fun resolved(place: Place): Place {
-        if (place.apiId.isNotBlank()) return place
-        resolvedStops[place.id]?.let { return it }
-        val r = TransitApi.resolve(place)
-        resolvedStops[place.id] = r
-        store.updatePlace(r)
-        return r
     }
 
     private fun refreshBoardLoop() {
@@ -304,7 +298,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             userLocation = loc
             nearby = try {
-                Load.Ok(TransitApi.nearbyStops(loc.lat, loc.lon, 1200))
+                Load.Ok(DataSource.nearbyStops(loc.lat, loc.lon, 1200))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -343,7 +337,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             delay(450) // wait until typing pauses
             searchResults = Load.Loading
             searchResults = try {
-                Load.Ok(TransitApi.findLocations(q.trim(), target.stopsOnly))
+                Load.Ok(DataSource.findLocations(q.trim(), target.stopsOnly))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -356,6 +350,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         overlays.removeAll { it is Overlay.Search }
         when (target) {
             SearchTarget.STOP -> openStopBoard(place)
+            SearchTarget.FOLLOW -> if (!store.isFollowing(place)) store.toggleFollowStop(place)
             SearchTarget.FROM -> {
                 tripFrom = place
                 afterTripPointChosen()
@@ -376,7 +371,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             }
             userLocation = loc
             if (target.stopsOnly) {
-                val stop = runCatching { TransitApi.nearbyStops(loc.lat, loc.lon, 1000).firstOrNull() }.getOrNull()
+                val stop = runCatching { DataSource.nearbyStops(loc.lat, loc.lon, 1000).firstOrNull() }.getOrNull()
                 if (stop != null) choose(stop, target) else searchResults = Load.Error(str(R.string.err_no_stop_nearby))
             } else {
                 choose(Place.currentLocation(loc.lat, loc.lon, str(R.string.current_location)), target)
@@ -398,7 +393,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     private var tripJob: Job? = null
 
     /** "Plan a trip": start at the current location (if allowed) and ask for the destination. */
+    /** A new trip always starts at "Leave now", not at a time picked for an earlier search. */
+    private fun resetTripTime() {
+        timeMode = TimeMode.NOW
+        tripTime = ZonedDateTime.now(TransitZone)
+    }
+
     fun startTripPlanning() {
+        resetTripTime()
         tripTo = null
         journeys = Load.Idle
         mapJourney = null
@@ -418,6 +420,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun planFrom(place: Place, asDestination: Boolean = false) {
+        if (overlays.none { it is Overlay.Trip }) resetTripTime()
         if (asDestination) tripTo = place else tripFrom = place
         overlays.removeAll { it !is Overlay.Trip }
         if (overlays.none { it is Overlay.Trip }) push(Overlay.Trip)
@@ -427,7 +430,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun planSaved(entry: TripEntry, swap: Boolean = false) {
         tripFrom = if (swap) entry.to else entry.from
         tripTo = if (swap) entry.from else entry.to
-        timeMode = TimeMode.NOW
+        resetTripTime()
         overlays.clear()
         push(Overlay.Trip)
         planTrip()
@@ -475,7 +478,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         tripJob = viewModelScope.launch {
             journeys = Load.Loading
             journeys = try {
-                Load.Ok(TransitApi.trips(from, to, time, timeMode == TimeMode.ARRIVE, excludedModes))
+                Load.Ok(DataSource.trips(from, to, time, timeMode == TimeMode.ARRIVE, excludedModes))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -522,7 +525,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         runJob = viewModelScope.launch {
             while (isActive) {
                 try {
-                    run = Load.Ok(TransitApi.run(dep))
+                    run = Load.Ok(DataSource.run(dep))
                 } catch (e: CancellationException) {
                     throw e
                 } catch (e: Exception) {
@@ -628,6 +631,63 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         checkForUpdates(manual = false)
     }
 
+    // ------------------------------------------------------------------ news
+    var news by mutableStateOf<Load<List<Disruption>>>(Load.Idle)
+        private set
+
+    /** Loads AVV / swa news from Bahnland Bayern. On failure the error keeps its HTTP code (e.g. 429). */
+    fun loadNews() {
+        viewModelScope.launch {
+            if (news !is Load.Ok) news = Load.Loading
+            news = try {
+                Load.Ok(DataSource.disruptions())
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Load.Error(newsError(e))
+            }
+        }
+    }
+
+    /** "Try again" in the traffic news: ask Bahnland Bayern once more, then reload the news. */
+    fun retryBahnland() {
+        viewModelScope.launch {
+            news = Load.Loading
+            if (DataSource.probe()) loadNews() else news = Load.Error(newsError(DataSource.lastBahnlandError))
+        }
+    }
+
+    private fun newsError(e: Throwable?): String = when (e) {
+        is HttpStatusException -> str(R.string.server_error, e.code)
+        is NewsUnavailableException -> str(R.string.news_need_bahnland)
+        is java.net.UnknownHostException, is java.net.ConnectException, is java.net.SocketTimeoutException -> str(R.string.err_offline)
+        else -> str(R.string.server_error, 429)
+    }
+
+    fun setApiChoice(choice: ApiChoice) {
+        store.updateSettings { it.copy(apiChoice = choice) }
+        DataSource.choice = choice
+        if (choice != ApiChoice.TRANSITOUS) viewModelScope.launch { DataSource.probe() }
+        news = Load.Idle
+    }
+
+    // ------------------------------------------------------------ fake update
+    /** Secret settings: show the update dialog for the latest release, even if it is installed already. */
+    fun fakeUpdate() {
+        viewModelScope.launch {
+            update = UpdateState.Checking
+            update = try {
+                val release = Updater.latest()
+                if (release == null) UpdateState.Error(str(R.string.err_update_check))
+                else { showUpdateDialog = true; UpdateState.Available(release) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                UpdateState.Error(errorText(e, R.string.err_update_check))
+            }
+        }
+    }
+
     fun replaySetup() {
         overlays.clear()
         sheetStop = null
@@ -636,6 +696,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     init {
+        DataSource.choice = store.settings.value.apiChoice
+        // one request to Bahnland Bayern at start, to know whether it is available
+        if (DataSource.choice != ApiChoice.TRANSITOUS) viewModelScope.launch { DataSource.probe() }
         if (LocationProvider.hasPermission(app)) locateMe(moveCamera = true)
     }
 

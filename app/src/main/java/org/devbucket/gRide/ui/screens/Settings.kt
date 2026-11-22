@@ -169,7 +169,7 @@ private fun VersionText(vm: AppViewModel, unlocked: Boolean) {
             )
         }
         AnimatedVisibility(unlocked) {
-            SecondaryAction(stringResource(R.string.secret_settings), { vm.push(Overlay.Secret) }, icon = Icons.Filled.AutoAwesome)
+            SecondaryAction(stringResource(R.string.secret_settings), { vm.push(Overlay.Secret) })
         }
     }
 }

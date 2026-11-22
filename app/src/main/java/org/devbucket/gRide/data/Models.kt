@@ -117,6 +117,10 @@ data class Departure(
     val tripId: String = "",
     val stopId: String = "",
     val origin: String = "",
+    /** Which API this came from; a departure's run must be loaded from the same one. */
+    val source: Source = Source.TRANSITOUS,
+    /** Bahnland Bayern only: needed to load the vehicle's run. */
+    val tripCode: String = "",
 ) {
     val time: Instant get() = estimated ?: planned ?: Instant.EPOCH
     val delayMinutes: Long?
@@ -166,6 +170,12 @@ data class Journey(val legs: List<Leg>, val changes: Int) {
     val departureDelay: Long? get() = firstTransit?.from?.delayMinutes
     val path: List<LatLon> get() = legs.flatMap { it.path }
 }
+
+/** The two data sources gRide can use. */
+enum class Source { BAHNLAND, TRANSITOUS }
+
+/** An HTTP error from a server, e.g. 429 when Bahnland Bayern refuses requests. */
+class HttpStatusException(val code: Int) : java.io.IOException("Server Error $code")
 
 data class LineRef(val number: String, val mode: Mode)
 

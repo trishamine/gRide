@@ -2,7 +2,7 @@
 
 ## EVERYTHING HERE IS GENERATED USING CLAUDE (mainly Opus 5.5)
 
-An Android app for public transport in Augsburg / AVV: live departures, trip planning, a map with clickable stops, and traffic news.
+An Android app for public transport in Germany, prioritized for Augsburg / AVV: live departures, trip planning, a map with clickable stops, and traffic news.
 It ships two UI styles you can switch between in **Settings → Design**:
 
 - **Material 3 Expressive**: `MaterialExpressiveTheme` with the expressive motion scheme, connected toggle buttons, shape-morphing buttons, `ShortNavigationBar` and `LoadingIndicator`.
@@ -15,7 +15,7 @@ It ships two UI styles you can switch between in **Settings → Design**:
 - **Trip planning**: from/to (stops, addresses, places, or your current location), leave now / depart at / arrive by, and filters for train, tram, bus and on-demand. Results show the duration, times and line chain, and the selected route is drawn on the map. *Earlier* and *Later* load more connections.
 - **Departure details**: tap any departure to see the vehicle's whole run: where it came from, the stops it has passed (dimmed), your stop, the stops still ahead, the last stop, and the route on a small map.
 - **Journey details**: a timeline with platforms, delays, intermediate stops and walking legs, with the route on the map.
-- **Traffic news**: links to the official swa, AVV and city of Augsburg news pages (the AVV news feed is no longer open to other apps). Cancellations and delays still show up live in the departures.
+- **Traffic news**: follow lines and stops (saved on the device) to see their AVV / swa news under *Your news*; the bottom section lists all current news for Augsburg city buses and trams (swa). If Bahnland Bayern doesn't answer, it shows the server error with *Try again*.
 - **Settings**: design style, theme (system/light/dark), dynamic colours, auto-refresh, and clearing history.
 
 ## Build

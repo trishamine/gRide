@@ -163,7 +163,7 @@
     <string name="history_desc">Удаляет недавние остановки и поездки. Избранное сохраняется.</string>
     <string name="clear_history">Очистить историю</string>
     <string name="about">О приложении</string>
-    <string name="about_text">Расписания и данные в реальном времени: Transitous (transitous.org) на основе открытых данных DELFI. Только некоммерческое использование.\nКарта: © участники OpenStreetMap.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
+    <string name="about_text">Расписания, данные в реальном времени и новости: Bahnland Bayern (DEFAS). Запасной вариант: Transitous (transitous.org) на основе открытых данных DELFI, только некоммерческое использование.\nКарта: © участники OpenStreetMap.\nLiquid Glass: Kyant0/AndroidLiquidGlass (backdrop).</string>
     <plurals name="taps_left">
         <item quantity="one">Ещё %d нажатие…</item>
         <item quantity="few">Ещё %d нажатия…</item>
@@ -184,7 +184,7 @@
     <string name="choose_language">Выберите язык</string>
     <string name="change_later">Это можно изменить позже в настройках.</string>
     <string name="lets_ride">Поехали</string>
-    <string name="intro_tagline">Автобусы и трамваи Аугсбурга.\nВ реальном времени, на карте, в вашем стиле.</string>
+    <string name="intro_tagline">Автобусы, трамваи и поезда по всей Германии.\nС приоритетом для Аугсбурга.</string>
     <string name="get_started">Начать</string>
     <string name="pick_style">Выберите стиль</string>
     <string name="expressive_short">Material 3 Expressive: смелые формы и пружинящие анимации</string>
@@ -216,4 +216,47 @@
     <string name="err_download">Загрузка не удалась.</string>
     <string name="err_rate_limited">Слишком много запросов. gRide делает паузу до %s.</string>
     <string name="err_offline">Нет соединения с сервером. Проверьте подключение к интернету.</string>
+
+    <!-- traffic news, follow, data source -->
+    <string name="tab_news">Новости</string>
+    <string name="you_follow">Вы следите</string>
+    <string name="edit">Изменить</string>
+    <string name="follow_hint">Выберите линии и остановки, которыми пользуетесь. Здесь появятся их ремонты, объезды и закрытия.</string>
+    <string name="choose_lines_stops">Выбрать линии и остановки</string>
+    <string name="your_news">Ваши новости</string>
+    <string name="no_followed_news">Нет текущих новостей по вашим линиям и остановкам.</string>
+    <string name="city_news">Городские автобусы и трамваи Аугсбурга</string>
+    <string name="city_news_sub">Все текущие новости swa (Stadtwerke Augsburg)</string>
+    <string name="no_city_news">Нет текущих новостей городского транспорта Аугсбурга.</string>
+    <string name="server_error">Ошибка сервера %d</string>
+    <string name="news_need_bahnland">Для новостей нужен API Bahnland Bayern, но в секретных настройках выбран Transitous.</string>
+    <string name="valid_from_until">С %1$s по %2$s</string>
+    <string name="valid_from">С %s</string>
+    <string name="valid_until">До %s</string>
+    <string name="follow">Подписки</string>
+    <string name="lines">Линии</string>
+    <string name="line_number_hint">Номер линии, напр. 3 или 32</string>
+    <string name="add_line">Добавить линию</string>
+    <string name="following">Отслеживаемые</string>
+    <string name="lines_with_news">Линии с текущими новостями</string>
+    <string name="stops_title">Остановки</string>
+    <string name="add_stop">Добавить остановку</string>
+    <string name="stop_following">Не отслеживать</string>
+    <string name="follow_news">Следить за новостями</string>
+    <string name="following_news">Новости отслеживаются</string>
+    <string name="follow_line">Следить за новостями линии %s</string>
+    <string name="unfollow_line">Не следить за линией %s</string>
+    <string name="you_follow_line">Вы следите за новостями линии %s</string>
+    <string name="stop_to_follow">Остановка для отслеживания</string>
+    <string name="data_source">Источник данных</string>
+    <string name="data_source_desc">Автоматически используется Bahnland Bayern, а если он не отвечает — Transitous.</string>
+    <string name="api_auto">Автоматически</string>
+    <string name="api_bahnland">Bahnland Bayern</string>
+    <string name="api_transitous">Transitous</string>
+    <string name="bahnland_ok">Bahnland Bayern доступен.</string>
+    <string name="bahnland_down">Bahnland Bayern сейчас недоступен, поэтому используется Transitous.</string>
+    <string name="bahnland_unknown">Проверка Bahnland Bayern…</string>
+    <string name="test_update">Проверка обновления</string>
+    <string name="test_update_desc">Показывает окно обновления для последней версии, скачивает её и устанавливает заново.</string>
+    <string name="test_update_button">Показать окно обновления</string>
 </resources>

@@ -46,6 +46,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.DepartureBoard
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.filled.Report
+import androidx.compose.material.icons.outlined.Report
+import org.devbucket.gRide.ui.screens.FollowScreen
+import org.devbucket.gRide.ui.screens.NewsScreen
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -98,6 +102,7 @@ private data class TabItem(val tab: Tab, @androidx.annotation.StringRes val labe
 private val tabs = listOf(
     TabItem(Tab.START, R.string.tab_start, Icons.Outlined.Home, Icons.Filled.Home),
     TabItem(Tab.DEPARTURES, R.string.tab_departures, Icons.Outlined.DepartureBoard, Icons.Filled.DepartureBoard),
+    TabItem(Tab.NEWS, R.string.tab_news, Icons.Outlined.Report, Icons.Filled.Report),
     TabItem(Tab.SETTINGS, R.string.tab_settings, Icons.Outlined.Settings, Icons.Filled.Settings),
 )
 
@@ -106,7 +111,7 @@ fun GRideApp(vm: AppViewModel) {
     val settings by vm.store.settings.collectAsStateWithLifecycle()
     val glass = settings.uiStyle == UiStyle.LIQUID_GLASS
     val overlay = vm.overlay
-    val showNav = settings.setupDone && (overlay == null || overlay is Overlay.StopBoard || overlay is Overlay.Run)
+    val showNav = settings.setupDone && (overlay == null || overlay is Overlay.StopBoard || overlay is Overlay.Run || overlay is Overlay.Follow)
     val navInset = with(LocalDensity.current) { WindowInsets.navigationBars.getBottom(this).toDp() }
     val bottomBar = if (showNav) (if (glass) 88.dp else 80.dp) + navInset else navInset
 
@@ -149,6 +154,8 @@ fun GRideApp(vm: AppViewModel) {
                             is Overlay.StopBoard -> StopBoardScreen(vm, k.stop)
                             is Overlay.Run -> RunScreen(vm, k.departure)
                             is Overlay.Secret -> SecretScreen(vm)
+                            is Overlay.Follow -> FollowScreen(vm)
+                            Tab.NEWS -> NewsScreen(vm)
                             "setup" -> SetupScreen(vm)
                             else -> Unit
                         }
@@ -166,6 +173,7 @@ fun GRideApp(vm: AppViewModel) {
                 ) {
                     val current = when (overlay) {
                         is Overlay.StopBoard -> Tab.DEPARTURES
+                        is Overlay.Follow -> Tab.NEWS
                         else -> vm.tab
                     }
                     if (glass) GlassNavBar(current, vm::selectTab) else ExpressiveNavBar(current, vm::selectTab)
